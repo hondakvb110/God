@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>WORLDBOX KW v10 - FINAL LORE</title>
+<title>WORLDBOX KW v10.1 - FIX JALAN</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box;font-family:Arial,sans-serif;touch-action:none}
 body{background:#111;color:white;overflow:hidden}
@@ -35,7 +35,7 @@ input[type=range]{flex:1}
 </style>
 </head>
 <body>
-<div id="header">🌍 WORLDBOX KW v10 - LORE LENGKAP ✨</div>
+<div id="header">🌍 WORLDBOX KW v10.1 - UDAH JALAN ✅</div>
 <div id="stats"><span>⏳ Hari <b id="cDay">1</b></span><span>🧍 <b id="cHuman">0</b></span><span>🧝 <b id="cElf">0</b></span><span>🧜 <b id="cMermaid">0</b></span><span>👺 <b id="cGoblin">0</b></span><span>🐴 <b id="cCentaur">0</b></span><span>🐍 <b id="cLamia">0</b></span></div>
 <div id="magicBar">💧 Air: <b id="cWaterMagic">0</b> | 🌿 Tanah: <b id="cEarthMagic">0</b> | ✨ Hybrid: <b id="cHybrid">0</b></div>
 <div id="houseBar">🌳🏡 Elf: <b id="cTreeHouse">0</b> | 🕳️ Goblin: <b id="cCave">0</b> | 🛖 Lamia: <b id="cLamiaHouse">0</b> | 🛖 Centaur: <b id="cCentaurHouse">0</b> | 🐚 Mermaid: <b id="cShellHouse">0</b></div>
@@ -44,11 +44,11 @@ input[type=range]{flex:1}
 <div id="brushRow"><span>🖌️ Kuas:</span><input type="range" id="brush" min="5" max="60" value="20"><span id="brushVal">20</span><button onclick="location.reload()" style="padding:5px 8px;background:#e74c3c;color:white;border:none;border-radius:8px">🗑️ Reset</button></div>
 <div id="tabs"><button id="tabRas" class="active" onclick="showTab('ras')">🧬 RAS</button><button id="tabDunia" onclick="showTab('dunia')">🏝️ DUNIA</button><button id="tabRumah" onclick="showTab('rumah')">🏡 RUMAH</button><button id="tabSihir" onclick="showTab('sihir')">✨ SIHIR</button><button id="tabAzab" onclick="showTab('azab')">⚡ AZAB</button></div>
 <div id="toolbar"></div>
-<div id="log">> Selamat datang di dunia lore lo! Elf rumah pohon, Goblin gua, Lamia & Centaur gubuk jerami, Mermaid sungai+pantai!</div>
+<div id="log">> Loading dunia...</div>
 <div id="bottom"><button style="background:#2ecc71;color:white" onclick="buildElfHouse()">🌳🏡 RUMAH POHON</button><button style="background:#555;color:white" onclick="buildGoblinCave()">🕳️ GUA GOBLIN</button><button style="background:#ff00ff;color:white" onclick="forceHybrid()">✨ KAWIN</button></div>
 <script>
 let canvas=document.getElementById('canvas'), ctx=canvas.getContext('2d'), layer=document.getElementById('entityLayer');
-let W,H,tool='human',brush=20,drawing=false, entities=[], houses=[], day=1, tab='ras', waterMagicCount=0, earthMagicCount=0;
+let W=0,H=0,tool='human',brush=20,drawing=false, entities=[], houses=[], day=1, tab='ras', waterMagicCount=0, earthMagicCount=0;
 let colors={land:'#2ecc71',water:'#1e90ff',sand:'#f1c40f',forest:'#27ae60',mountain:'#7f8c8d',lava:'#e74c3c'};
 let RACES={
   human:{emoji:'🧍',name:'Manusia',maxAge:80,breed:0.015,speed:20,attack:false,maleChance:0.50,culture:'Campuran',magic:'none',house:'🏠'},
@@ -70,8 +70,7 @@ let TOOLS={
 };
 function showTab(t){ tab=t; ['ras','dunia','rumah','sihir','azab'].forEach(k=>document.getElementById('tab'+k[0].toUpperCase()+k.slice(1)).classList.toggle('active',k==t)); renderTools(); }
 function renderTools(){ let tb=document.getElementById('toolbar'); tb.innerHTML=''; TOOLS[tab].forEach(([key,label])=>{ let d=document.createElement('div'); d.className='tool'+(tool==key?' active':''); d.innerHTML=label; d.onclick=()=>{tool=key; if(key=='elfHouse') buildElfHouse(); if(key=='goblinCave') buildGoblinCave(); if(key=='humanHouse') buildHouse('human'); if(key=='mermaidHouse') buildHouse('mermaid'); if(key=='centaurHouse') buildHouse('centaur'); if(key=='lamiaHouse') buildHouse('lamia'); if(key=='waterMagic') castWater(); if(key=='earthMagic') castEarth(); if(key=='healMagic') castHeal(); if(key=='stormMagic') castStorm(); document.querySelectorAll('.tool').forEach(x=>x.classList.remove('active')); d.classList.add('active');}; tb.appendChild(d); }); }
-function resize(){W=canvas.width=canvas.clientWidth; H=canvas.height=canvas.clientHeight; ctx.fillStyle=colors.water; ctx.fillRect(0,0,W,H);} window.onresize=resize; resize(); renderTools();
-document.getElementById('brush').oninput=e=>{brush=+e.target.value; document.getElementById('brushVal').innerText=brush;}
+function resize(){ W=canvas.width=canvas.clientWidth||window.innerWidth; H=canvas.height=canvas.clientHeight||200; ctx.fillStyle=colors.water; ctx.fillRect(0,0,W,H); }
 function log(t){document.getElementById('log').innerHTML='> '+t;}
 function countRace(r){return entities.filter(e=>e.race==r).length;}
 function getPos(e){let r=canvas.getBoundingClientRect(); return {x:(e.touches?e.touches[0].clientX:e.clientX)-r.left, y:(e.touches?e.touches[0].clientY:e.clientY)-r.top};}
@@ -85,29 +84,28 @@ function paint(e){ let p=getPos(e), x=p.x, y=p.y;
 function getGender(maleChance){ return Math.random() < maleChance ? 'male' : 'female'; }
 function genderIcon(g){ return g=='male' ? '♂️' : '♀️'; }
 function buildHouse(race, x, y){
-  if(!x){ x=Math.random()*W*0.8; y=Math.random()*H*0.8; }
+  if(x===undefined||x===null){ x=Math.random()*W*0.8+20; y=Math.random()*H*0.8+20; }
   let info=RACES[race];
   let houseData={
     human:{emoji:'🏠',desc:'Rumah kayu Manusia'},
-    elf:{emoji:'🌳🏡',desc:'Rumah Pohon Elf - di atas pohon, nyatu sama alam'},
-    mermaid:{emoji:'🐚🏖️',desc:'Rumah Mermaid - di SUNGAI & PANTAI! Kerang raksasa di pasir pantai + batu sungai'},
-    goblin:{emoji:'🕳️⛰️',desc:'Gua Goblin - bawah tanah, gelap, banyak terowongan, di gunung & sekitarnya'},
-    centaur:{emoji:'🛖🌾🍂',desc:'Gubuk Centaur - SAMA kayak Lamia! CUMA ATAP daun, bawahnya TANAH, kasur JERAMI + rumput & daun kering. Di hutan + padang rumput sekitar hutan.'},
-    lamia:{emoji:'🛖🌾🍂',desc:'Gubuk Lamia - CUMA ATAP daun, bawahnya TANAH langsung, kasur JERAMI + rumput & daun kering. Di hutan pinggir sungai.'}
+    elf:{emoji:'🌳🏡',desc:'Rumah Pohon Elf - di atas pohon'},
+    mermaid:{emoji:'🐚🏖️',desc:'Rumah Mermaid - di SUNGAI & PANTAI! Kerang di pasir'},
+    goblin:{emoji:'🕳️⛰️',desc:'Gua Goblin - bawah tanah, di gunung'},
+    centaur:{emoji:'🛖🌾🍂',desc:'Gubuk Centaur - CUMA ATAP, bawah TANAH, kasur JERAMI. Di hutan + padang rumput.'},
+    lamia:{emoji:'🛖🌾🍂',desc:'Gubuk Lamia - CUMA ATAP, bawah TANAH, kasur JERAMI. Di hutan pinggir sungai.'}
   }[race];
   let el=document.createElement('div'); el.className='entity'; el.innerHTML='<div style="font-size:26px">'+houseData.emoji+'</div><small>'+info.name+' House</small>'; el.style.left=x+'px'; el.style.top=y+'px'; el.style.zIndex=5; layer.appendChild(el);
   houses.push({el,x,y,race});
   log(houseData.desc+' dibangun!');
   updateHouseCounts();
-  if(race=='elf'){ ctx.fillStyle=colors.forest; ctx.beginPath(); ctx.arc(x,y+15,25,0,Math.PI*2); ctx.fill(); spawn('tree', x, y+15); log('🌿 Sihir Tanah Elf: Pohon tumbuh jadi Rumah Pohon!'); }
-  if(race=='goblin'){ ctx.fillStyle=colors.mountain; ctx.beginPath(); ctx.arc(x,y,30,0,Math.PI*2); ctx.fill(); log('⛰️ Goblin menggali gua di bawah gunung!'); }
+  if(race=='elf'){ ctx.fillStyle=colors.forest; ctx.beginPath(); ctx.arc(x,y+15,25,0,Math.PI*2); ctx.fill(); spawn('tree', x, y+15); }
+  if(race=='goblin'){ ctx.fillStyle=colors.mountain; ctx.beginPath(); ctx.arc(x,y,30,0,Math.PI*2); ctx.fill(); }
   if(race=='lamia'){
     ctx.fillStyle=colors.forest; ctx.beginPath(); ctx.arc(x,y,45,0,Math.PI*2); ctx.fill();
     ctx.fillStyle=colors.water; ctx.beginPath(); ctx.arc(x+35,y+20,28,0,Math.PI*2); ctx.fill();
     ctx.fillStyle='#8B4513'; ctx.beginPath(); ctx.arc(x,y,18,0,Math.PI*2); ctx.fill();
     ctx.fillStyle='#f1c40f'; ctx.beginPath(); ctx.arc(x,y+5,12,0,Math.PI*2); ctx.fill();
     for(let i=0;i<4;i++) spawn('tree', x+(Math.random()-0.5)*70, y+(Math.random()-0.5)*70);
-    log('🛖 Lamia bikin GUBUK! Atap daun doang, bawah tanah, kasur jerami + daun kering!');
   }
   if(race=='centaur'){
     ctx.fillStyle=colors.forest; ctx.beginPath(); ctx.arc(x,y,45,0,Math.PI*2); ctx.fill();
@@ -115,13 +113,11 @@ function buildHouse(race, x, y){
     ctx.fillStyle='#8B4513'; ctx.beginPath(); ctx.arc(x,y,20,0,Math.PI*2); ctx.fill();
     ctx.fillStyle='#f1c40f'; ctx.beginPath(); ctx.arc(x,y+5,15,0,Math.PI*2); ctx.fill();
     for(let i=0;i<3;i++) spawn('tree', x+(Math.random()-0.5)*70, y+(Math.random()-0.5)*70);
-    log('🛖🐴 Centaur bikin GUBUK! Sama kayak Lamia! Atap doang, bawah tanah, kasur jerami! Di hutan + padang rumput!');
   }
   if(race=='mermaid'){
     ctx.fillStyle=colors.water; ctx.beginPath(); ctx.arc(x,y,45,0,Math.PI*2); ctx.fill();
     ctx.fillStyle=colors.sand; ctx.beginPath(); ctx.arc(x+35,y+20,30,0,Math.PI*2); ctx.fill();
     ctx.fillStyle='#ff69b4'; ctx.beginPath(); ctx.arc(x,y,14,0,Math.PI*2); ctx.fill();
-    log('🧜‍♀️🏖️ Mermaid bikin rumah di SUNGAI + PANTAI! Kerang raksasa di pasir pantai!');
   }
 }
 function buildElfHouse(){ buildHouse('elf'); }
@@ -138,9 +134,34 @@ function castEarth(){ let elves=entities.filter(e=>e.race=='elf' || (e.isHybrid 
 function castHeal(){ entities.forEach(e=>{ if(e.race!='tree') e.age=Math.max(0, e.age-5); }); log('💚 HEAL! Semua jadi muda 5 tahun!'); }
 function castStorm(){ let queen=entities.find(e=>e.isQueen && e.race=='mermaid'); if(!queen){ log('Butuh Ratu Mermaid! 👑'); return; } waterMagicCount+=2; document.getElementById('cWaterMagic').innerText=waterMagicCount; for(let i=0;i<3;i++){ let x=Math.random()*W, y=Math.random()*H; ctx.fillStyle=colors.water; ctx.beginPath(); ctx.arc(x,y,45,0,Math.PI*2); ctx.fill(); boom(x,y,'storm'); } log('🌊🌪️ BADAI RATU MERMAID!'); }
 function boom(x,y,type){ let m={water:'💧',earth:'🌿',storm:'🌊',lightning:'⚡',meteor:'☄️',tornado:'🌪️',ufo:'🛸'}[type]||'✨'; let e=document.createElement('div'); e.className='entity'; e.innerText=m; e.style.fontSize='45px'; e.style.left=x+'px'; e.style.top=y+'px'; e.style.zIndex=20; layer.appendChild(e); setTimeout(()=>e.remove(),900); }
-function updateQueens(){ ['mermaid','lamia'].forEach(race=>{ let females=entities.filter(e=>e.race==race && e.gender=='female'); entities.forEach(e=>{ if(e.race==race) e.isQueen=false; }); if(females.length>0){ females.sort((a,b)=>b.age-a.age); let queen=females[0]; queen.isQueen=true; document.getElementById(race=='mermaid'?'queenMermaid':'queenLamia').innerText='👑 Umur '+queen.age+'/'+RACES[race].maxAge; refreshEntityLabel(queen); } else document.getElementById(race=='mermaid'?'queenMermaid':'queenLamia').innerText='- punah -'; }); }
-function refreshEntityLabel(en){ let info=en.isHybrid?en.hybridData:RACES[en.race]; let crown=en.isQueen?'👑':''; let magicIcon = info.magic=='water'?'💧':info.magic=='earth'?'🌿':info.magic && info.magic.includes('water') && info.magic.includes('earth')?'💧🌿':''; en.el.className='entity '+(en.isHybrid?'hybrid ':'')+(en.isQueen?'queen ':'')+(en.gender=='male'?'male':'female'); en.el.innerHTML='<div style="font-size:15px">'+crown+info.emoji+magicIcon+'</div><small>'+(en.isHybrid?'✨':'')+crown+genderIcon(en.gender)+' '+info.name+' '+en.age+'/'+info.maxAge+'</small>'; }
+function updateQueens(){ ['mermaid','lamia'].forEach(race=>{ let females=entities.filter(e=>e.race==race && e.gender=='female'); entities.forEach(e=>{ if(e.race==race) e.isQueen=false; }); let elQ=document.getElementById(race=='mermaid'?'queenMermaid':'queenLamia'); if(females.length>0){ females.sort((a,b)=>b.age-a.age); let queen=females[0]; queen.isQueen=true; if(elQ) elQ.innerText='👑 Umur '+queen.age; refreshEntityLabel(queen); } else if(elQ) elQ.innerText='- punah -'; }); }
+function refreshEntityLabel(en){ let info=en.isHybrid?en.hybridData:RACES[en.race]; let crown=en.isQueen?'👑':''; let magicIcon = info.magic=='water'?'💧':info.magic=='earth'?'🌿':(info.magic && info.magic.includes('water') && info.magic.includes('earth'))?'💧🌿':''; en.el.className='entity '+(en.isHybrid?'hybrid ':'')+(en.isQueen?'queen ':'')+(en.gender=='male'?'male':'female'); en.el.innerHTML='<div style="font-size:15px">'+crown+info.emoji+magicIcon+'</div><small>'+(en.isHybrid?'✨':'')+crown+genderIcon(en.gender)+' '+info.name+' '+en.age+'/'+info.maxAge+'</small>'; }
 function makeHybrid(parentA, parentB, x, y){ let a = parentA.isHybrid ? parentA.hybridData : RACES[parentA.race]; let b = parentB.isHybrid ? parentB.hybridData : RACES[parentB.race]; let maxAge = Math.round((a.maxAge + b.maxAge)/2); let speed = Math.round((a.speed + b.speed)/2); let breed = (a.breed + b.breed)/2; let attack = a.attack || b.attack; let maleChance = ((a.maleChance||0.5)+(b.maleChance||0.5))/2; let magics=[]; if(a.magic && a.magic!='none') magics.push(...a.magic.split('+')); if(b.magic && b.magic!='none') magics.push(...b.magic.split('+')); let magic = [...new Set(magics)].join('+') || 'none'; let mother = parentA.gender=='female' ? parentA : parentB; let motherCulture = mother.isHybrid ? 'Hybrid' : RACES[mother.race].culture; let name = a.name + '-' + b.name; let coolNames={'Manusia-Elf':'Elfan ✨','Elf-Manusia':'Elfan ✨','Manusia-Goblin':'Hobgoblin ✨','Goblin-Manusia':'Hobgoblin ✨','Elf-Centaur':'Elftaur ✨','Centaur-Elf':'Elftaur ✨','Mermaid-Lamia':'Sealamia ✨','Lamia-Mermaid':'Sealamia ✨','Centaur-Lamia':'Lamiaur ✨','Lamia-Centaur':'Lamiaur ✨','Mermaid-Manusia':'Mermanusia ✨','Manusia-Mermaid':'Mermanusia ✨','Elf-Goblin':'Goblin Elf ✨','Goblin-Elf':'Goblin Elf ✨','Mermaid-Centaur':'Seataur ✨','Centaur-Mermaid':'Seataur ✨','Mermaid-Elf':'Elf Laut ✨','Elf-Mermaid':'Elf Laut ✨'}; let displayName = coolNames[name] || (name + ' ✨'); let emoji = a.emoji + b.emoji; let gender = getGender(maleChance); let magicIcon = magic=='water'?'💧':magic=='earth'?'🌿':magic.includes('water')&&magic.includes('earth')?'💧🌿':''; let el=document.createElement('div'); el.className='entity hybrid '+(gender=='male'?'male':'female'); el.innerHTML='<div style="font-size:15px">'+emoji+magicIcon+'</div><small>✨'+genderIcon(gender)+' '+displayName+' 0/'+maxAge+'</small>'; el.style.left=x+'px'; el.style.top=y+'px'; layer.appendChild(el); let hybridData={emoji,name:displayName,maxAge,speed,breed,attack,maleChance,culture:motherCulture,magic}; entities.push({el,x,y,race:'hybrid',isHybrid:true,hybridData,age:0,gender}); log('HYBRID LAHIR! '+displayName+' Sihir: '+magic+' ✨'); }
-function spawn(race,x,y){ let info=RACES[race]; let gender = race=='tree' ? 'female' : getGender(info.maleChance); let magicIcon = info.magic=='water'?'💧':info.magic=='earth'?'🌿':''; let el=document.createElement('div'); el.className='entity '+(gender=='male'?'male':'female'); el.innerHTML=info.emoji+magicIcon+'<small>'+genderIcon(gender)+' 0/'+info.maxAge+'</small>'; el.style.fontSize='20px'; el.style.left=x+'px'; el.style.top=y+'px'; layer.appendChild(el); entities.push({el,x,y,race,type:info.emoji,age:0,gender}); log(RACES[race].name+' '+genderIcon(gender)+' lahir! Rumah: '+info.house); updateQueens(); }
+function spawn(race,x,y){ if(W==0) resize(); let info=RACES[race]; let gender = race=='tree' ? 'female' : getGender(info.maleChance); let magicIcon = info.magic=='water'?'💧':info.magic=='earth'?'🌿':''; let el=document.createElement('div'); el.className='entity '+(gender=='male'?'male':'female'); el.innerHTML=info.emoji+magicIcon+'<small>'+genderIcon(gender)+' 0/'+info.maxAge+'</small>'; el.style.fontSize='20px'; el.style.left=x+'px'; el.style.top=y+'px'; layer.appendChild(el); entities.push({el,x,y,race,type:info.emoji,age:0,gender}); updateQueens(); }
 function killNear(x,y,r){ entities=entities.filter(en=>{ let dx=en.x-x, dy=en.y-y; if(Math.sqrt(dx*dx+dy*dy)<r && en.race!='tree'){ en.el.innerHTML='💀'; setTimeout(()=>en.el.remove(),700); return false; } return true; }); updateQueens(); }
-function forceHybrid(){ let females=entities.filter(e=>e
+function forceHybrid(){ let females=entities.filter(e=>e.race!='tree' && e.gender=='female'); let males=entities.filter(e=>e.race!='tree' && e.gender=='male'); if(females.length==0||males.length==0){ alert('Butuh 1 cewek + 1 cowok!'); return; } makeHybrid(females[0], males[0], (females[0].x+males[0].x)/2, (females[0].y+males[0].y)/2); }
+canvas.addEventListener('touchstart',e=>{drawing=true; paint(e);}); canvas.addEventListener('touchmove',e=>{if(drawing) paint(e); e.preventDefault();}); canvas.addEventListener('touchend',()=>drawing=false);
+canvas.addEventListener('mousedown',e=>{drawing=true; paint(e);}); canvas.addEventListener('mousemove',e=>{if(drawing) paint(e);}); canvas.addEventListener('mouseup',()=>drawing=false);
+function spawnRandom(){ for(let i=0;i<3;i++){let x=Math.random()*W, y=Math.random()*H; ctx.fillStyle=colors.land; ctx.beginPath(); ctx.arc(x,y,70,0,Math.PI*2); ctx.fill();} ['human','elf','mermaid','goblin','centaur','lamia'].forEach(r=>{ for(let i=0;i<3;i++) spawn(r, 40+Math.random()*(W-80), 40+Math.random()*(H-80)); }); log('6 ras tercipta! Dunia jalan! 🌍'); }
+window.onresize=resize;
+document.getElementById('brush').oninput=e=>{brush=+e.target.value; document.getElementById('brushVal').innerText=brush;};
+resize(); renderTools(); spawnRandom();
+setInterval(()=>{
+  day++; document.getElementById('cDay').innerText=day; updateQueens();
+  if(day%5==0){
+    let elves=entities.filter(e=>e.race=='elf');
+    let goblins=entities.filter(e=>e.race=='goblin');
+    if(elves.length>=3 && houses.filter(h=>h.race=='elf').length < Math.floor(elves.length/3)){ let e=elves[0]; buildHouse('elf', e.x, e.y-20); }
+    if(goblins.length>=3 && houses.filter(h=>h.race=='goblin').length < Math.floor(goblins.length/3)){ let g=goblins[0]; buildHouse('goblin', g.x, g.y+10); }
+  }
+  let snapshot=[...entities];
+  snapshot.forEach(en=>{
+    if(!entities.includes(en) || en.race=='tree') return;
+    let info = en.isHybrid ? en.hybridData : RACES[en.race];
+    en.age++;
+    let speedBoost = en.isQueen ? 1.5 : 1;
+    if(en.isQueen) refreshEntityLabel(en);
+    else { let small=en.el.querySelector('small'); if(small) small.innerText=genderIcon(en.gender)+' '+(en.isHybrid?info.name:info.name)+' '+en.age+'/'+info.maxAge; }
+    if(en.age>=info.maxAge){ let wasQueen=en.isQueen; en.el.innerHTML='💀<small>MATI TUA</small>'; setTimeout(()=>en.el.remove(),1000); entities=entities.filter(e=>e!==en); if(wasQueen) log('👑 RATU '+info.name+' WAFAT!'); else log((en.isHybrid?info.name:info.name)+' mati tua '+en.age+'th ⚰️'); updateQueens(); return; }
+    en.x=Math.max(0,Math.min(W-30, en.x+(Math.random()-0.5)*info.speed*speedBoost));
+    en.y=Math.max(0
