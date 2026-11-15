@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>WORLDBOX KW - Dewa Pencipta</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:Arial,sans-serif;touch-action:none}
+body{background:#111;color:white;overflow:hidden}
+#header{background:#1a1a2e;padding:8px;text-align:center;font-weight:bold;color:gold;font-size:16px}
+#stats{display:flex;justify-content:space-around;background:#222;padding:6px;font-size:12px}
+#canvas{width:100vw;height:58vh;background:#1e90ff;display:block;cursor:crosshair}
+#toolbar{display:grid;grid-template-columns:repeat(5,1fr);gap:5px;padding:6px;background:#222}
+.tool{padding:10px 2px;border:2px solid #444;border-radius:10px;background:#333;color:white;font-size:11px;text-align:center;cursor:pointer}
+.tool.active{border-color:gold;background:#444;transform:scale(1.05)}
+#brushRow{display:flex;gap:10px;align-items:center;padding:6px 10px;background:#222;font-size:12px}
+input[type=range]{flex:1}
+#log{height:55px;background:#000;color:#ffeb3b;font-size:11px;padding:5px;overflow:hidden}
+#bottom{display:flex;gap:5px;padding:6px;background:#222}
+#bottom button{flex:1;padding:10px;border:none;border-radius:10px;font-weight:bold}
+</style>
+</head>
+<body>
+<div id="header">🌍 WORLDBOX KW - GUA JADI DEWA</div>
+<div id="stats"><span>👥 <b id="cHuman">0</b> Manusia</span><span>🐑 <b id="cSheep">0</b></span><span>🌲 <b id="cTree">0</b></span><span>🏠 <b id="cHouse">0</b> Desa</span><span>⏳ Hari <b id="cDay">1</b></span></div>
+<canvas id="canvas"></canvas>
+<div id="brushRow"><span>🖌️ Ukuran Kuas:</span><input type="range" id="brush" min="5" max="60" value="20"><span id="brushVal">20</span><button onclick="clearWorld()" style="padding:6px 10px;background:#e74c3c;color:white;border:none;border-radius:8px">🗑️ Reset</button></div>
+<div id="toolbar">
+  <div class="tool active" data-tool="land" onclick="setTool(this,'land')">🏝️<br>Tanah</div>
+  <div class="tool" data-tool="water" onclick="setTool(this,'water')">🌊<br>Air</div>
+  <div class="tool" data-tool="sand" onclick="setTool(this,'sand')">🏖️<br>Pasir</div>
+  <div class="tool" data-tool="forest" onclick="setTool(this,'forest')">🌲<br>Hutan</div>
+  <div class="tool" data-tool="mountain" onclick="setTool(this,'mountain')">⛰️<br>Gunung</div>
+  <div class="tool" data-tool="human" onclick="setTool(this,'human')">🧍<br>Manusia</div>
+  <div class="tool" data-tool="sheep" onclick="setTool(this,'sheep')">🐑<br>Domba</div>
+  <div class="tool" data-tool="wolf" onclick="setTool(this,'wolf')">🐺<br>Serigala</div>
+  <div class="tool" data-tool="house" onclick="setTool(this,'house')">🏠<br>Desa</div>
+  <div class="tool" data-tool="lightning" onclick="setTool(this,'lightning')">⚡<br>Petir</div>
+  <div class="tool" data-tool="lava" onclick="setTool(this,'lava')">🌋<br>Lava</div>
+  <div class="tool" data-tool="rain" onclick="setTool(this,'rain')">🌧️<br>Hujan</div>
+  <div class="tool" data-tool="tornado" onclick="setTool(this,'tornado')">🌪️<br>Tornado</div>
+  <div class="tool" data-tool="meteor" onclick="setTool(this,'meteor')">☄️<br>Meteor</div>
+  <div class="tool" data-tool="ufo" onclick="setTool(this,'ufo')">🛸<br>UFO</div>
+</div>
+<div id="log">> Selamat datang Dewa! Corat-coret dunia lo pake jari...</div>
+<div id="bottom"><button style="background:gold" onclick="alert('Cara main: Pilih alat di atas, terus coret-coret / tap di peta! Manusia bakal hidup sendiri.')">❓ CARA MAIN</button><button style="background:#2ecc71;color:white" onclick="spawnRandom()">🎲 ACAK DUNIA</button></div>
+
+<script>
+let canvas=document.getElementById('canvas'), ctx=canvas.getContext('2d');
+let W,H, tool='land', brush=20, drawing=false;
+let entities=[], houses=[], day=1;
+let colors={land:'#2ecc71', water:'#1e90ff', sand:'#f1c40f', forest:'#27ae60', mountain:'#7f8c8d', lava:'#e74c3c'};
+
+function resize(){ W=canvas.width=canvas.clientWidth; H=canvas.height=canvas.clientHeight; ctx.fillStyle=colors.water; ctx.fillRect(0,0,W,H); }
+window.onresize=resize; resize();
+
+function setTool(el,t){ document.querySelectorAll('.tool').forEach(x=>x.classList.remove('active')); el.classList.add('active'); tool=t; }
+document.getElementById('brush').oninput=e=>{ brush=+e.target.value; document.getElementById('brushVal').innerText=brush; }
+function log(t){ document.getElementById('log').innerHTML='> '+t; }
+
+function paint(x,y){
+  let rect=canvas.getBoundingClientRect(); x-=rect.left; y-=rect.top;
+  if(['land','water','sand','forest','mountain','lava'].includes(tool)){
+    ctx.fillStyle=colors[tool]||colors.land;
+    ctx.beginPath(); ctx.arc(x,y,brush,0,Math.PI*2); ctx.fill();
+    if(tool=='forest' && Math.random()<0.3) spawn('🌲',x,y,true);
+  } else if(tool=='human') spawn('🧍',x,y,false);
+  else if(tool=='sheep') spawn('🐑',x,y,false);
+  else if(tool=='wolf') spawn('🐺',x,y,false);
+  else if(tool=='house'){ houses.push({x,y}); log('Desa baru dibangun! 🏠'); }
+  else if(tool=='lightning'){ explosion(x,y,'⚡',30); killNear(x,y); log('DUAR! Petir Dewa menyambar! ⚡'); }
+  else if(tool=='meteor'){ explosion(x,y,'☄️',60); killNear(x,y,80); ctx.fillStyle='#333'; ctx.beginPath(); ctx.arc(x,y,40,0,Math.PI*2); ctx.fill(); log('METEOR JATUH! ☄️💥'); }
+  else if(tool=='tornado'){ explosion(x,y,'🌪️',50); killNear(x,y,60); log('TORNADO DATANG! 🌪️'); }
+  else if(tool=='ufo'){ explosion(x,y,'🛸',40); log('UFO MENCULIK MANUSIA! 🛸👽'); killNear(x,y,50); }
+  else if(tool=='rain'){ ctx.fillStyle='rgba(255,255,255,0.3)'; ctx.fillRect(x-40,y-40,80,80); log('Hujan berkah! Tanaman tumbuh 🌧️'); }
+}
+function spawn(emoji,x,y,isTree){
+  let e=document.createElement('div');
+  e.innerText=emoji; e.style.position='absolute'; e.style.fontSize=isTree?'18px':'22px'; e.style.left=x+'px'; e.style.top=(y+canvas.getBoundingClientRect().top)+'px'; e.style.pointerEvents='none'; e.style.transition='all 1s'; e.style.zIndex=10;
+  document.body.appendChild(e);
+  entities.push({el:e,x,y,type:emoji});
+}
+function explosion(x,y,emoji,size){
+  let e=document.createElement('div'); e.innerText=emoji; e.style.position='absolute'; e.style.fontSize=size+'px'; e.style.left=x+'px'; e.style.top=(y+canvas.getBoundingClientRect().top)+'px'; e.style.zIndex=20; document.body.appendChild(e); setTimeout(()=>e.remove(),800);
+}
+function killNear(x,y,r=50){
+  entities=entities.filter(en=>{
+    let dx=en.x-x, dy=en.y-y;
+    if(Math.sqrt(dx*dx+dy*dy)<r && en.type!=='🌲'){ en.el.innerText='💀'; setTimeout(()=>en.el.remove(),1000); return false; }
+    return true;
+  });
+}
+canvas.addEventListener('touchstart',e=>{ drawing=true; paint(e.touches[0].clientX, e.touches[0].clientY); });
+canvas.addEventListener('touchmove',e=>{ if(drawing) paint(e.touches[0].clientX, e.touches[0].clientY); e.preventDefault(); });
+canvas.addEventListener('touchend',()=>drawing=false);
+canvas.addEventListener('mousedown',e=>{ drawing=true; paint(e.clientX,e.clientY); });
+canvas.addEventListener('mousemove',e=>{ if(drawing) paint(e.clientX,e.clientY); });
+canvas.addEventListener('mouseup',()=>drawing=false);
+
+function spawnRandom(){
+  for(let i=0;i<5;i++){ let x=Math.random()*W, y=Math.random()*H; ctx.fillStyle=colors.land; ctx.beginPath(); ctx.arc(x,y,60+Math.random()*60,0,Math.PI*2); ctx.fill(); }
+  for(let i=0;i<8;i++) spawn('🧍',Math.random()*W, Math.random()*H,false);
+  for(let i=0;i<6;i++) spawn('🐑',Math.random()*W, Math.random()*H,false);
+  log('Dunia acak tercipta! 🎲');
+}
+function clearWorld(){ if(confirm('Reset dunia?')){ location.reload(); } }
+
+// SIMULASI HIDUP - kayak WorldBox
+setInterval(()=>{
+  day++; document.getElementById('cDay').innerText=day;
+  entities.forEach(en=>{
+    if(en.type==='🧍' || en.type==='🐑' || en.type==='🐺'){
+      en.x+= (Math.random()-0.5)*30; en.y+= (Math.random()-0.5)*30;
+      en.el.style.left=en.x+'px'; en.el.style.top=(en.y+canvas.getBoundingClientRect().top)+'px';
+    }
+    // Serigala makan domba
+    if(en.type==='🐺'){
+      let prey=entities.find(o=>o.type==='🐑' && Math.abs(o.x-en.x)<20 && Math.abs(o.y-en.y)<20);
+      if(prey){ prey.el.innerText='💀'; setTimeout(()=>prey.el.remove(),800); entities=entities.filter(e=>e!==prey); log('Serigala makan domba! 🐺🍖'); }
+    }
+    // Manusia beranak kalau ketemu manusia lain
+    if(en.type==='🧍' && Math.random()<0.02){
+      let other=entities.find(o=>o.type==='🧍' && o!==en && Math.abs(o.x-en.x)<30);
+      if(other){ spawn('🧍',en.x+10,en.y+10,false); log('Bayi baru lahir! 👶'); }
+    }
+  });
+  let h=entities.filter(e=>e.type==='🧍').length;
+  let s=entities.filter(e=>e.type==='🐑').length;
+  let t=entities.filter(e=>e.type==='🌲').length;
+  document.getElementById('cHuman').innerText=h;
+  document.getElementById('cSheep').innerText=s;
+  document.getElementById('cTree').innerText=t;
+  document.getElementById('cHouse').innerText=houses.length;
+},2000);
+</script>
+</body>
+</html>
