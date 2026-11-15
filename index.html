@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>WORLDBOX KW v13 - PREGNANCY</title>
+<title>WORLDBOX KW v15 - CLASS & AERODINAMIS</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box;font-family:Arial,sans-serif;touch-action:none}
 body{background:#111;color:white;overflow:hidden}
@@ -16,7 +16,10 @@ body{background:#111;color:white;overflow:hidden}
 #kingdomBar{background:#330033;padding:5px;text-align:center;font-size:10px;color:#ffccff;font-weight:bold}
 #cultureBar{background:#331a00;padding:5px;text-align:center;font-size:10px;color:#ffdd88;font-weight:bold}
 #pregBar{background:#4a002a;padding:5px;text-align:center;font-size:10px;color:#ff99cc;font-weight:bold}
-#worldWrap{position:relative;width:100vw;height:34vh;overflow:hidden;background:#1e90ff}
+#classBar{background:#2a004a;padding:5px;text-align:center;font-size:10px;color:#d8aaff;font-weight:bold}
+#controlBar{display:flex;gap:6px;padding:6px;background:#222;justify-content:center;flex-wrap:wrap}
+#controlBar button{flex:1;padding:11px 4px;border:none;border-radius:12px;font-weight:bold;font-size:12px;min-width:90px}
+#worldWrap{position:relative;width:100vw;height:28vh;overflow:hidden;background:#1e90ff}
 #canvas{width:100%;height:100%;display:block}
 #entityLayer{position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;overflow:hidden}
 .entity{position:absolute;transition:all 1s;z-index:10;text-align:center;line-height:1}
@@ -24,6 +27,9 @@ body{background:#111;color:white;overflow:hidden}
 .entity.hybrid{filter:drop-shadow(0 0 5px #ff00ff)}
 .entity.queen{filter:drop-shadow(0 0 8px gold)}
 .entity.pregnant{filter:drop-shadow(0 0 6px pink)}
+.entity.mage{filter:drop-shadow(0 0 5px #00bfff)}
+.entity.magicSword{filter:drop-shadow(0 0 7px #ff6600)}
+.entity.magicArcher{filter:drop-shadow(0 0 7px #ffcc00)}
 .male small{border:1px solid #00bfff}
 .female small{border:1px solid #ff69b4}
 #brushRow{display:flex;gap:8px;align-items:center;padding:5px 10px;background:#222;font-size:12px}
@@ -37,59 +43,185 @@ input[type=range]{flex:1}
 #log{height:34px;background:#000;color:#ffeb3b;font-size:11px;padding:5px;overflow:hidden}
 #bottom{display:flex;gap:5px;padding:6px;background:#222}
 #bottom button{flex:1;padding:9px;border:none;border-radius:10px;font-weight:bold;font-size:11px}
+#chronoPanel{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.96);z-index:200;flex-direction:column}
+#chronoHeader{padding:10px;background:#1a1a2e;text-align:center}
+#chronoHeader h2{color:gold;font-size:18px}
+#chronoHeader p{font-size:11px;color:#ccc;margin-top:4px}
+#chronoFilter{display:flex;gap:5px;padding:8px;background:#222;flex-wrap:wrap;justify-content:center}
+#chronoFilter button{padding:7px 10px;border:none;border-radius:10px;background:#333;color:white;font-size:11px;font-weight:bold}
+#chronoFilter button.active{background:gold;color:black}
+#chronoList{flex:1;overflow-y:auto;padding:10px;display:flex;flex-direction:column;gap:6px}
+.chronoItem{background:#1e1e1e;padding:8px 10px;border-radius:10px;border-left:4px solid #555;font-size:12px;line-height:1.4}
+.chronoItem.birth{border-color:#2ecc71}
+.chronoItem.pregnant{border-color:#ff69b4}
+.chronoItem.death{border-color:#888}
+.chronoItem.kill{border-color:#e74c3c}
+.chronoItem.queen{border-color:gold}
+.chronoItem.house{border-color:#f1c40f}
+.chronoItem.hybrid{border-color:#ff00ff}
+.chronoItem.magic{border-color:#00bfff}
+.chronoItem.doom{border-color:#ff6600}
+.chronoItem.world{border-color:#00c853}
+.chronoItem.class{border-color:#d8aaff}
+#statsPanel{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.96);z-index:210;flex-direction:column;overflow-y:auto}
+.statCard{background:#1e1e1e;margin:8px 12px;padding:12px;border-radius:14px;border-left:5px solid gold}
+.statCard h3{color:gold;font-size:15px;margin-bottom:6px}
+.statCard p{font-size:12px;line-height:1.6;color:#ddd}
+#chronoFooter,#statsFooter{padding:10px;background:#222;display:flex;gap:6px}
+#chronoFooter button,#statsFooter button{flex:1;padding:12px;border:none;border-radius:12px;font-weight:bold;font-size:12px}
 </style>
 </head>
 <body>
-<div id="header">🌍 WORLDBOX KW v13 - PREGNANCY 🤰</div>
+<div id="header">🌍 WORLDBOX KW v15 - CLASS & AERODINAMIS ⚔️🏹🧙‍♂️🌪️</div>
 <div id="stats"><span>⏳ Day <b id="cDay">1</b></span><span>🧍 <b id="cHuman">0</b></span><span>🧝 <b id="cElf">0</b></span><span>🧜 <b id="cMermaid">0</b></span><span>👺 <b id="cGoblin">0</b></span><span>🐴 <b id="cCentaur">0</b></span><span>🐍 <b id="cLamia">0</b></span></div>
-<div id="magicBar">💧 Water: <b id="cWaterMagic">0</b> | 🌿 Earth: <b id="cEarthMagic">0</b> | ✨ Hybrid: <b id="cHybrid">0</b></div>
-<div id="pregBar">🤰 Pregnant: <b id="cPregnant">0</b> | Human/Goblin/Lamia: <b>5 Days</b> | Elf/Mermaid/Centaur (Long Life): <b>10 Days - 2x Human!</b></div>
+<div id="classBar">🧙 Mage: <b id="cMage">0</b> | ⚔️ Swordsman: <b id="cSword">0</b> | 🏹 Archer: <b id="cArcher">0</b> | 🔥⚔️ Magic Sword: <b id="cMagicSword">0</b> | 🔥🏹 Magic Archer: <b id="cMagicArcher">0</b></div>
+<div id="magicBar">💧 Water: <b id="cWaterMagic">0</b> | 🌿 Earth: <b id="cEarthMagic">0</b> | ✨ Hybrid: <b id="cHybrid">0</b> | 💾 <span id="saveStatus">Auto-Save: ON</span></div>
+<div id="pregBar">🤰 Pregnant: <b id="cPregnant">0</b> | Human/Goblin/Lamia: <b>5 Days</b> | Elf/Mermaid/Centaur: <b>10 Days - 2x Human!</b></div>
 <div id="clanBar">🏳️ Top Clan: <b id="cTopClan">-</b> | 👨‍👩‍👧‍👦 Family: <b id="cFamilyCount">0</b> | 👶 Biggest Family: <b id="cTopFamily">-</b></div>
 <div id="kingdomBar">👑 Kingdom: Elvenwood | Stonehold | Pearldeep | Scalewood | Grassfield | Sunhaven</div>
 <div id="cultureBar">🎭 Culture: Nature Worship | Tribe Survival | Ocean Matriarchy | Serpent Matriarchy | Nomad Honor | Kingdom Builders</div>
 <div id="houseBar">🌳🏡 Elf: <b id="cTreeHouse">0</b> | 🕳️ Goblin: <b id="cCave">0</b> | 🛖 Lamia: <b id="cLamiaHouse">0</b> | 🛖 Centaur: <b id="cCentaurHouse">0</b> | 🐚 Mermaid: <b id="cShellHouse">0</b></div>
 <div id="queenBar">👑 Queen Mermaid: <span id="queenMermaid">-</span> | 👑 Queen Lamia: <span id="queenLamia">-</span></div>
 <div id="worldWrap"><canvas id="canvas"></canvas><div id="entityLayer"></div></div>
+<div id="controlBar">
+<button id="btnPause" style="background:#ff9800;color:white" onclick="togglePause()">⏸️ PAUSE</button>
+<button id="btnSpeed" style="background:#2196f3;color:white" onclick="changeSpeed()">⏩ SPEED: <span id="speedLabel">Normal</span></button>
+<button style="background:#00c853;color:white" onclick="addOneOfEach()">✨ + 1 TIAP RAS</button>
+<button style="background:#8e44ad;color:white" onclick="openChrono()">📜 KRONOLOGI (<span id="chronoCount">0</span>)</button>
+<button style="background:#f39c12;color:white" onclick="openStats()">📊 STATS</button>
+<button style="background:#00bfff;color:white" onclick="manualSave()">💾 SAVE</button>
+</div>
 <div id="brushRow"><span>🖌️ Brush:</span><input type="range" id="brush" min="5" max="60" value="20"><span id="brushVal">20</span><button onclick="location.reload()" style="padding:5px 8px;background:#e74c3c;color:white;border:none;border-radius:8px">🗑️ Reset</button></div>
-<div id="tabs"><button id="tabRas" class="active" onclick="showTab('ras')">🧬 RACE</button><button id="tabDunia" onclick="showTab('dunia')">🏝️ WORLD</button><button id="tabRumah" onclick="showTab('rumah')">🏡 HOUSE</button><button id="tabSihir" onclick="showTab('sihir')">✨ MAGIC</button><button id="tabAzab" onclick="showTab('azab')">⚡ DOOM</button></div>
+<div id="tabs"><button id="tabRas" class="active" onclick="showTab('ras')">🧬 RACE</button><button id="tabDunia" onclick="showTab('dunia')">🏝️ WORLD</button><button id="tabRumah" onclick="showTab('rumah')">🏡 HOUSE</button><button id="tabSihir" onclick="showTab('sihir')">✨ MAGIC</button><button id="tabAzab" onclick="showTab('azab')">⚡ DOOM</button><button id="tabClass" onclick="showTab('class')">⚔️ CLASS</button></div>
 <div id="toolbar"></div>
-<div id="log">> Loading world + Pregnancy...</div>
+<div id="log">> Loading world v15...</div>
 <div id="bottom"><button style="background:#2ecc71;color:white" onclick="buildElfHouse()">🌳🏡 TREE HOUSE</button><button style="background:#555;color:white" onclick="buildGoblinCave()">🕳️ GOBLIN CAVE</button><button style="background:#ff00ff;color:white" onclick="forceHybrid()">✨ MARRY</button></div>
+
+<div id="chronoPanel">
+<div id="chronoHeader"><h2>📜 KRONOLOGI DUNIA</h2><p id="chronoSummary">Hari 1 - Hari 1 | Total 0 Kejadian</p></div>
+<div id="chronoFilter">
+<button class="active" onclick="filterChrono('all',this)">📜 SEMUA</button>
+<button onclick="filterChrono('birth',this)">👶 LAHIR</button>
+<button onclick="filterChrono('pregnant',this)">🤰 HAMIL</button>
+<button onclick="filterChrono('death',this)">⚰️ MATI</button>
+<button onclick="filterChrono('kill',this)">⚔️ BUNUH</button>
+<button onclick="filterChrono('queen',this)">👑 RATU</button>
+<button onclick="filterChrono('house',this)">🏡 RUMAH</button>
+<button onclick="filterChrono('hybrid',this)">✨ HYBRID</button>
+<button onclick="filterChrono('doom',this)">☄️ AZAB</button>
+<button onclick="filterChrono('class',this)">⚔️ CLASS</button>
+</div>
+<div id="chronoList"></div>
+<div id="chronoFooter"><button style="background:#555;color:white" onclick="closeChrono()">❌ TUTUP</button><button style="background:#e74c3c;color:white" onclick="clearChrono()">🗑️ HAPUS SEJARAH</button><button style="background:#00c853;color:white" onclick="copyChrono()">📋 COPY SEJARAH</button></div>
+</div>
+
+<div id="statsPanel">
+<div style="padding:14px;background:#1a1a2e;text-align:center"><h2 style="color:gold">📊 STATISTIK AKHIR DUNIA</h2><p id="statsSummary" style="font-size:12px;color:#ccc;margin-top:4px">Hari 1</p></div>
+<div id="statsContent"></div>
+<div id="statsFooter"><button style="background:#555;color:white" onclick="closeStats()">❌ TUTUP</button><button style="background:#e74c3c;color:white" onclick="resetStats()">🗑️ RESET STATS</button></div>
+</div>
+
 <script>
 let canvas=document.getElementById('canvas'), ctx=canvas.getContext('2d'), layer=document.getElementById('entityLayer');
 let W=0,H=0,tool='human',brush=20,drawing=false, entities=[], houses=[], day=1, tab='ras', waterMagicCount=0, earthMagicCount=0, familyCounter=1;
+let paused=false, speedMode=1, speedLabels=['Lambat','Normal','Cepet'], speedValues=[3000,2000,800];
+// CLASS SYSTEM v15 + ELEMEN v15
+// ATURAN ELEMEN v15:
+// - Fire / Water / Earth: Cuma INFUSE ke senjata, gak ada efek lambat / kejebak / stun
+// - Wind: Lebih cepet karena AERODINAMIS! Panah & pedang ketiup angin jadi lebih licin & cepet
+let CLASSES={ mage:{emoji:'🧙',name:'Mage'}, swordsman:{emoji:'⚔️',name:'Swordsman'}, archer:{emoji:'🏹',name:'Archer'} };
+let ELEMENTS=['fire','wind','water','earth'];
+let ELEMENT_EMOJI={fire:'🔥',wind:'🌪️',water:'💧',earth:'🌿'};
+function assignClass(race){
+  let r=Math.random();
+  if(race=='elf') return r<0.5?'mage':(r<0.8?'archer':'swordsman');
+  if(race=='mermaid') return r<0.6?'mage':(r<0.8?'archer':'swordsman');
+  if(race=='centaur') return r<0.5?'archer':(r<0.8?'swordsman':'mage');
+  if(race=='lamia') return r<0.5?'swordsman':(r<0.8?'mage':'archer');
+  if(race=='goblin') return r<0.5?'swordsman':(r<0.8?'archer':'mage');
+  if(race=='human') return r<0.4?'swordsman':(r<0.7?'archer':'mage');
+  return r<0.33?'mage':(r<0.66?'swordsman':'archer');
+}
+function assignElement(race, hybridMagic){
+  if(hybridMagic && hybridMagic.includes('water')) return 'water';
+  if(hybridMagic && hybridMagic.includes('earth')) return 'earth';
+  if(race=='elf') return 'earth';
+  if(race=='mermaid') return 'water';
+  if(Math.random()<0.4) return ELEMENTS[Math.floor(Math.random()*ELEMENTS.length)];
+  return null;
+}
+function getDisplayClass(ent){
+  if(ent.element && ent.cls=='swordsman') return 'magicSword';
+  if(ent.element && ent.cls=='archer') return 'magicArcher';
+  return ent.cls;
+}
+function getClassLabel(ent){
+  if(!ent.cls) return '';
+  let dc=getDisplayClass(ent);
+  if(dc=='magicSword') return '🔥⚔️ Magic Swordsman '+ELEMENT_EMOJI[ent.element]+' '+ent.element;
+  if(dc=='magicArcher') return '🔥🏹 Magic Archer '+ELEMENT_EMOJI[ent.element]+' '+ent.element;
+  if(ent.cls=='mage') return '🧙 Mage'+(ent.element?' '+ELEMENT_EMOJI[ent.element]+' '+ent.element:'');
+  if(ent.cls=='swordsman') return '⚔️ Swordsman';
+  if(ent.cls=='archer') return '🏹 Archer';
+  return ent.cls;
+}
+function updateClassBar(){
+  document.getElementById('cMage').innerText=entities.filter(e=>e.cls=='mage').length;
+  document.getElementById('cSword').innerText=entities.filter(e=>getDisplayClass(e)=='swordsman').length;
+  document.getElementById('cArcher').innerText=entities.filter(e=>getDisplayClass(e)=='archer').length;
+  document.getElementById('cMagicSword').innerText=entities.filter(e=>getDisplayClass(e)=='magicSword').length;
+  document.getElementById('cMagicArcher').innerText=entities.filter(e=>getDisplayClass(e)=='magicArcher').length;
+}
+function spawnClassMember(cls, element, x, y){
+  let race = cls=='mage'?'elf':(cls=='swordsman'?'human':'centaur');
+  let e=spawn(race, x||40+Math.random()*(W-80), y||40+Math.random()*(H-80));
+  e.cls=cls; e.element=element||assignElement(race,null,e.cls);
+  refreshEntityLabel(e); updateClassBar();
+  addHistory('class','⚔️ '+getClassLabel(e)+' lahir! Ras '+e.race+' Clan '+e.clan+' Elemen: '+(e.element||'none'));
+  log('⚔️ '+getClassLabel(e)+' lahir! Clan '+e.clan);
+  return e;
+}
+let stats={totalBorn:0,totalDied:0,totalKilled:0,totalHybrid:0,totalHouses:0,totalPregnant:0,totalDoom:0,totalMagic:0,totalQueens:0,totalMagicSwordKills:0,totalMagicArcherKills:0, killsByClan:{}, birthsByClan:{}, deathsByClan:{}, birthsByRace:{}, deathsByRace:{}, killsByClass:{}};
+let history=[], chronoFilter='all';
+function saveGame(){ try{ let data={history:history.slice(-500), stats:stats, day:day, saveTime:new Date().toLocaleString()}; localStorage.setItem('worldbox_kw_save_v15', JSON.stringify(data)); document.getElementById('saveStatus').innerText='Saved: '+new Date().toLocaleTimeString()+' ✅'; }catch(e){} }
+function manualSave(){ saveGame(); log('💾 Disave manual!'); alert('Disave! Total '+history.length+' kejadian!'); }
+function loadGame(){ try{ let raw=localStorage.getItem('worldbox_kw_save_v15'); if(!raw) return false; let data=JSON.parse(raw); if(data.history) history=data.history; if(data.stats) stats=data.stats; if(data.day) day=data.day; document.getElementById('chronoCount').innerText=history.length; return true; }catch(e){ return false; } }
+function resetStats(){ if(confirm('Reset stats + sejarah?')){ localStorage.removeItem('worldbox_kw_save_v15'); history=[]; stats={totalBorn:0,totalDied:0,totalKilled:0,totalHybrid:0,totalHouses:0,totalPregnant:0,totalDoom:0,totalMagic:0,totalQueens:0,totalMagicSwordKills:0,totalMagicArcherKills:0,killsByClan:{},birthsByClan:{},deathsByClan:{},birthsByRace:{},deathsByRace:{},killsByClass:{}}; document.getElementById('chronoCount').innerText='0'; closeStats(); log('Stats di-reset!'); } }
+function openStats(){
+  document.getElementById('statsPanel').style.display='flex';
+  let topKiller='-'; let maxK=0; for(let k in stats.killsByClan){ if(stats.killsByClan[k]>maxK){maxK=stats.killsByClan[k]; topKiller=k;} }
+  let topBirthClan='-'; let maxB=0; for(let k in stats.birthsByClan){ if(stats.birthsByClan[k]>maxB){maxB=stats.birthsByClan[k]; topBirthClan=k;} }
+  let topClassKiller='-'; let maxCK=0; for(let k in stats.killsByClass){ if(stats.killsByClass[k]>maxCK){maxCK=stats.killsByClass[k]; topClassKiller=k;} }
+  document.getElementById('statsSummary').innerText='Hari 1 - Hari '+day+' | Hidup: '+entities.length+' | Total kejadian: '+history.length;
+  document.getElementById('statsContent').innerHTML=
+    '<div class="statCard"><h3>👶 KELAHIRAN & KEMATIAN</h3><p>Total Lahir: <b>'+stats.totalBorn+'</b><br>Total Mati Tua: <b>'+stats.totalDied+'</b><br>Total Dibunuh: <b>'+stats.totalKilled+'</b><br>Total Hybrid: <b>'+stats.totalHybrid+'</b></p></div>'+
+    '<div class="statCard"><h3>⚔️ CLASS & PERTARUNGAN</h3><p>🧙 Mage: <b>'+entities.filter(e=>e.cls=='mage').length+'</b> | ⚔️ Swordsman: <b>'+entities.filter(e=>getDisplayClass(e)=='swordsman').length+'</b> | 🏹 Archer: <b>'+entities.filter(e=>getDisplayClass(e)=='archer').length+'</b><br>🔥⚔️ Magic Swordsman: <b>'+entities.filter(e=>getDisplayClass(e)=='magicSword').length+'</b> | 🔥🏹 Magic Archer: <b>'+entities.filter(e=>getDisplayClass(e)=='magicArcher').length+'</b><br>⚔️ Class Pembunuh Terbanyak: <b>'+topClassKiller+' ('+maxCK+' bunuh)</b><br>🔥⚔️ Magic Sword Kills: <b>'+stats.totalMagicSwordKills+'</b><br>🔥🏹 Magic Archer Kills: <b>'+stats.totalMagicArcherKills+'</b></p></div>'+
+    '<div class="statCard"><h3>🏆 KLAN TER-TER</h3><p>⚔️ Klan Pembunuh Terbanyak: <b>'+topKiller+' ('+maxK+')</b><br>👶 Klan Tersubur: <b>'+topBirthClan+' ('+maxB+')</b><br>👑 Total Ratu: <b>'+stats.totalQueens+'</b></p></div>'+
+    '<div class="statCard"><h3>🏡 & ✨ LAINNYA</h3><p>Rumah: <b>'+stats.totalHouses+'</b> | Sihir: <b>'+stats.totalMagic+'</b> | Azab: <b>'+stats.totalDoom+'</b></p></div>'+
+    '<div class="statCard"><h3>🌪️ ATURAN ELEMEN v15</h3><p>🔥 Api / 💧 Air / 🌿 Tanah: Cuma infuse ke senjata, gak ada efek lambat / kejebak<br>🌪️ Angin: Lebih cepet karena AERODINAMIS! Panah & pedang ketiup angin jadi lebih licin & cepet</p></div>';
+}
+function closeStats(){ document.getElementById('statsPanel').style.display='none'; }
+function addHistory(type, text){ let item={day:day, type:type, text:text, time:new Date().toLocaleTimeString()}; history.push(item); if(history.length>800) history=history.slice(-800); document.getElementById('chronoCount').innerText=history.length; if(document.getElementById('chronoPanel').style.display=='flex') renderChrono(); }
+function openChrono(){ document.getElementById('chronoPanel').style.display='flex'; renderChrono(); }
+function closeChrono(){ document.getElementById('chronoPanel').style.display='none'; }
+function filterChrono(f, btn){ chronoFilter=f; document.querySelectorAll('#chronoFilter button').forEach(b=>b.classList.remove('active')); btn.classList.add('active'); renderChrono(); }
+function renderChrono(){ let list=document.getElementById('chronoList'); list.innerHTML=''; document.getElementById('chronoSummary').innerText='Hari 1 - Hari '+day+' | Total '+history.length+' Kejadian | Filter: '+chronoFilter.toUpperCase(); let filtered = chronoFilter=='all' ? history : history.filter(h=>h.type==chronoFilter); if(filtered.length==0){ list.innerHTML='<div style="text-align:center;padding:20px;color:#888">Belum ada kejadian '+chronoFilter+'</div>'; return; } [...filtered].reverse().forEach(h=>{ let div=document.createElement('div'); div.className='chronoItem '+h.type; let icon={birth:'👶',pregnant:'🤰',death:'⚰️',kill:'⚔️',queen:'👑',house:'🏡',hybrid:'✨',magic:'✨',doom:'☄️',world:'🌍',class:'⚔️'}[h.type]||'📜'; div.innerHTML='<b>Hari '+h.day+'</b> '+icon+' '+h.text+'<br><span style="font-size:10px;color:#888">'+h.time+'</span>'; list.appendChild(div); }); }
+function clearChrono(){ if(confirm('Hapus semua sejarah?')){ history=[]; document.getElementById('chronoCount').innerText='0'; saveGame(); renderChrono(); } }
+function copyChrono(){ let txt='KRONOLOGI DUNIA - Hari 1 sampai Hari '+day+'\n\n'+history.map(h=>'Hari '+h.day+' - '+h.text).join('\n'); navigator.clipboard.writeText(txt).then(()=>alert('Sejarah ke-copy!')); }
+function togglePause(){ paused=!paused; document.getElementById('btnPause').innerText=paused?'▶️ LANJUT':'⏸️ PAUSE'; document.getElementById('btnPause').style.background=paused?'#00c853':'#ff9800'; log(paused?'Game di-PAUSE.':'Game jalan lagi!'); }
+function changeSpeed(){ speedMode=(speedMode+1)%3; document.getElementById('speedLabel').innerText=speedLabels[speedMode]; log('Speed jadi: '+speedLabels[speedMode]+'!'); }
+function addOneOfEach(){ ['human','elf','mermaid','goblin','centaur','lamia'].forEach(r=>spawn(r, 40+Math.random()*(W-80), 40+Math.random()*(H-80))); log('✨ Ditambah 1 tiap ras!'); addHistory('world','Tuhan nambah 1 tiap ras!'); saveGame(); }
 let colors={land:'#2ecc71',water:'#1e90ff',sand:'#f1c40f',forest:'#27ae60',mountain:'#7f8c8d',lava:'#e74c3c'};
 let CLANS={ human:['Sun','Moon','Star'], elf:['Leaf','Flower','Root'], mermaid:['Pearl','Coral','Wave'], goblin:['Stone','Mud','Bone'], centaur:['Grass','Wind','Hoof'], lamia:['Scale','Venom','River'], hybrid:['Mixed'] };
 let KINGDOMS={ human:'Sunhaven', elf:'Elvenwood', mermaid:'Pearldeep', goblin:'Stonehold', centaur:'Grassfield', lamia:'Scalewood', hybrid:'Mixed Kingdom' };
-let CULTURES={
-  human:{name:'Kingdom Builders', leader:'King / Council', food:'Bread & Meat', tradition:'Build City & Trade', marriage:'Monogamy', burial:'Stone Grave', bonus:'Near house = breed up'},
-  elf:{name:'Nature Worship', leader:'Elder Council', food:'Fruit & Leaf Tea', tradition:'Meditate in Tree', marriage:'Slow - 1 partner for life', burial:'Become Tree', bonus:'Near tree = heal'},
-  mermaid:{name:'Ocean Matriarchy', leader:'Queen - Oldest Female', food:'Fish & Pearl', tradition:'Sing on Beach', marriage:'Queen chooses partner', burial:'Return to Sea', bonus:'Queen can summon Storm'},
-  goblin:{name:'Tribe Survival', leader:'Strongest Wins', food:'Anything Found', tradition:'Collect Scrap', marriage:'Many partners', burial:'Leave in Cave', bonus:'Group 3+ = breed x2'},
-  centaur:{name:'Nomad Honor', leader:'Fastest Runner', food:'Grass & Apple', tradition:'Race & Honor Duel', marriage:'Honor Bond', burial:'Open Field', bonus:'Fastest speed'},
-  lamia:{name:'Serpent Matriarchy', leader:'Queen - Oldest Female', food:'Meat - Hunt Together', tradition:'Shed Skin Together', marriage:'Queen chooses partner', burial:'Bury in Forest', bonus:'Near Lamia = speed up'},
-  hybrid:{name:'Mixed Heritage', leader:'Follow Mother Culture', food:'Both Parents Food', tradition:'Two Traditions', marriage:'Follow Mother', burial:'Follow Mother', bonus:'Has 2 Magics'}
-};
-// PREGNANCY SYSTEM - INI INTINYA!
-// Long Life (maxAge 130) = 2x Human (maxAge 80)
-function getPregnancyDays(raceOrMaxAge, isHybrid, motherMaxAge, fatherMaxAge){
-  if(isHybrid){ let max = Math.max(motherMaxAge||80, fatherMaxAge||80); return max>=130 ? 10 : 5; }
-  let maxAge = typeof raceOrMaxAge==='number' ? raceOrMaxAge : (RACES[raceOrMaxAge]?RACES[raceOrMaxAge].maxAge:80);
-  return maxAge>=130 ? 10 : 5; // 130 = long life = 10 days, 80 = normal = 5 days
-}
+let CULTURES={ human:{name:'Kingdom Builders', burial:'Stone Grave'}, elf:{name:'Nature Worship', burial:'Become Tree'}, mermaid:{name:'Ocean Matriarchy', burial:'Return to Sea'}, goblin:{name:'Tribe Survival', burial:'Leave in Cave'}, centaur:{name:'Nomad Honor', burial:'Open Field'}, lamia:{name:'Serpent Matriarchy', burial:'Bury in Forest'}, hybrid:{name:'Mixed Heritage', burial:'Follow Mother'} };
+function getPregnancyDays(isHybrid, motherMaxAge, fatherMaxAge){ if(isHybrid){ let max=Math.max(motherMaxAge||80, fatherMaxAge||80); return max>=130?10:5; } return 5; }
+function getPregnancyForRace(race){ if(race=='elf'||race=='mermaid'||race=='centaur') return 10; return 5; }
 function randomClan(race){ let arr=CLANS[race]||CLANS.hybrid; return arr[Math.floor(Math.random()*arr.length)]; }
 function getKingdom(race){ return KINGDOMS[race]||'Unknown'; }
 function getCulture(race, isHybrid){ if(isHybrid) return CULTURES.hybrid; return CULTURES[race]||CULTURES.hybrid; }
 function getClanCount(){ let m={}; entities.forEach(e=>{ if(e.clan) m['Clan '+e.clan]=(m['Clan '+e.clan]||0)+1; }); return m; }
-function updateClanBar(){
-  let m=getClanCount(); let top='-'; let max=0; for(let k in m){ if(m[k]>max){max=m[k]; top=k;} }
-  document.getElementById('cTopClan').innerText=top+' - '+max+' people';
-  let fams={}; entities.forEach(e=>{ if(e.familyId) fams[e.familyId]=(fams[e.familyId]||0)+1; });
-  document.getElementById('cFamilyCount').innerText=Object.keys(fams).length;
-  let topF='-'; let maxF=0; for(let k in fams){ if(fams[k]>maxF){maxF=fams[k]; topF='Family #'+k+' ('+maxF+' people)';} }
-  document.getElementById('cTopFamily').innerText=topF;
-  document.getElementById('cPregnant').innerText=entities.filter(e=>e.pregnant).length;
-}
+function updateClanBar(){ let m=getClanCount(); let top='-'; let max=0; for(let k in m){ if(m[k]>max){max=m[k]; top=k;} } document.getElementById('cTopClan').innerText=top+' - '+max+' people'; let fams={}; entities.forEach(e=>{ if(e.familyId) fams[e.familyId]=(fams[e.familyId]||0)+1; }); document.getElementById('cFamilyCount').innerText=Object.keys(fams).length; let topF='-'; let maxF=0; for(let k in fams){ if(fams[k]>maxF){maxF=fams[k]; topF='Family #'+k+' ('+maxF+' people)';} } document.getElementById('cTopFamily').innerText=topF; document.getElementById('cPregnant').innerText=entities.filter(e=>e.pregnant).length; updateClassBar(); }
 let RACES={
   human:{emoji:'🧍',name:'Human',maxAge:80,breed:0.015,speed:20,attack:false,maleChance:0.50,culture:'Kingdom Builders',magic:'none',house:'🏠',pregnancy:5},
   elf:{emoji:'🧝',name:'Elf',maxAge:130,breed:0.006,speed:18,attack:false,maleChance:0.35,culture:'Nature Worship',magic:'earth',house:'🌳🏡',pregnancy:10},
@@ -102,14 +234,15 @@ let RACES={
   tree:{emoji:'🌲',name:'Tree',maxAge:999,breed:0,speed:0,maleChance:0.5,magic:'none',house:'none',pregnancy:0}
 };
 let TOOLS={
-  ras:[['human','🧍<br>Human<br><small>Kingdom Builders<br>Preg 5 Days</small>'],['elf','🧝<br>Elf 🌿<br><small>Nature Worship<br>Preg 10 Days</small>'],['mermaid','🧜‍♀️<br>Mermaid 💧<br><small>Ocean Matriarchy<br>Preg 10 Days</small>'],['goblin','👺<br>Goblin<br><small>Tribe Survival<br>Preg 5 Days</small>'],['centaur','🐴<br>Centaur<br><small>Nomad Honor<br>Preg 10 Days</small>'],['lamia','🧍‍♀️🐍<br>Lamia<br><small>Serpent Matriarchy<br>Preg 5 Days</small>'],['sheep','🐑<br>Sheep'],['wolf','🐺<br>Wolf']],
+  ras:[['human','🧍<br>Human<br>Preg 5 Days'],['elf','🧝<br>Elf<br>Preg 10 Days'],['mermaid','🧜‍♀️<br>Mermaid<br>Preg 10 Days'],['goblin','👺<br>Goblin<br>Preg 5 Days'],['centaur','🐴<br>Centaur<br>Preg 10 Days'],['lamia','🧍‍♀️🐍<br>Lamia<br>Preg 5 Days'],['sheep','🐑<br>Sheep'],['wolf','🐺<br>Wolf']],
   dunia:[['land','🏝️<br>Land'],['water','🌊<br>Water'],['sand','🏖️<br>Sand'],['forest','🌲<br>Forest'],['mountain','⛰️<br>Mountain'],['rain','🌧️<br>Rain']],
-  rumah:[['elfHouse','🌳🏡<br>Tree House<br><small>Elvenwood</small>'],['goblinCave','🕳️<br>Goblin Cave<br><small>Stonehold</small>'],['humanHouse','🏠<br>House<br><small>Sunhaven</small>'],['mermaidHouse','🐚🏖️<br>Beach House<br><small>Pearldeep</small>'],['centaurHouse','🛖🌾<br>Centaur Hut<br><small>Grassfield</small>'],['lamiaHouse','🛖🌾<br>Lamia Hut<br><small>Scalewood</small>']],
+  rumah:[['elfHouse','🌳🏡<br>Tree House'],['goblinCave','🕳️<br>Goblin Cave'],['humanHouse','🏠<br>House'],['mermaidHouse','🐚🏖️<br>Beach House'],['centaurHouse','🛖🌾<br>Centaur Hut'],['lamiaHouse','🛖🌾<br>Lamia Hut']],
   sihir:[['waterMagic','💧<br>Water Magic'],['earthMagic','🌿<br>Earth Magic'],['healMagic','💚<br>Heal'],['stormMagic','🌊🌪️<br>Water Storm']],
-  azab:[['lightning','⚡<br>Lightning'],['meteor','☄️<br>Meteor'],['tornado','🌪️<br>Tornado'],['lava','🌋<br>Lava'],['ufo','🛸<br>UFO']]
+  azab:[['lightning','⚡<br>Lightning'],['meteor','☄️<br>Meteor'],['tornado','🌪️<br>Tornado'],['lava','🌋<br>Lava'],['ufo','🛸<br>UFO']],
+  class:[['mage','🧙<br>Mage<br>Sihir Jauh'],['swordsman','⚔️<br>Swordsman<br>Tebasan Deket'],['archer','🏹<br>Archer<br>Panah Jauh'],['magicSword','🔥⚔️<br>Magic Sword<br>Pedang Api'],['magicArcher','🔥🏹<br>Magic Archer<br>Panah Api'],['fireMage','🔥🧙<br>Fire Mage<br>Infuse Api'],['windArcher','🌪️🏹<br>Wind Archer<br>Panah Cepet<br>Aerodinamis!'],['windSword','🌪️⚔️<br>Wind Sword<br>Tebasan Cepet<br>Aerodinamis!'],['waterArcher','💧🏹<br>Water Archer<br>Infuse Air'],['earthArcher','🌿🏹<br>Earth Archer<br>Infuse Tanah']]
 };
-function showTab(t){ tab=t; ['ras','dunia','rumah','sihir','azab'].forEach(k=>document.getElementById('tab'+k[0].toUpperCase()+k.slice(1)).classList.toggle('active',k==t)); renderTools(); }
-function renderTools(){ let tb=document.getElementById('toolbar'); tb.innerHTML=''; TOOLS[tab].forEach(([key,label])=>{ let d=document.createElement('div'); d.className='tool'+(tool==key?' active':''); d.innerHTML=label; d.onclick=()=>{tool=key; if(key=='elfHouse') buildElfHouse(); if(key=='goblinCave') buildGoblinCave(); if(key=='humanHouse') buildHouse('human'); if(key=='mermaidHouse') buildHouse('mermaid'); if(key=='centaurHouse') buildHouse('centaur'); if(key=='lamiaHouse') buildHouse('lamia'); if(key=='waterMagic') castWater(); if(key=='earthMagic') castEarth(); if(key=='healMagic') castHeal(); if(key=='stormMagic') castStorm(); document.querySelectorAll('.tool').forEach(x=>x.classList.remove('active')); d.classList.add('active');}; tb.appendChild(d); }); }
+function showTab(t){ tab=t; ['ras','dunia','rumah','sihir','azab','class'].forEach(k=>document.getElementById('tab'+k[0].toUpperCase()+k.slice(1)).classList.toggle('active',k==t)); renderTools(); }
+function renderTools(){ let tb=document.getElementById('toolbar'); tb.innerHTML=''; TOOLS[tab].forEach(([key,label])=>{ let d=document.createElement('div'); d.className='tool'+(tool==key?' active':''); d.innerHTML=label; d.onclick=()=>{tool=key; if(key=='elfHouse') buildElfHouse(); if(key=='goblinCave') buildGoblinCave(); if(key=='humanHouse') buildHouse('human'); if(key=='mermaidHouse') buildHouse('mermaid'); if(key=='centaurHouse') buildHouse('centaur'); if(key=='lamiaHouse') buildHouse('lamia'); if(key=='waterMagic') castWater(); if(key=='earthMagic') castEarth(); if(key=='healMagic') castHeal(); if(key=='stormMagic') castStorm(); if(key=='mage') spawnClassMember('mage'); if(key=='swordsman') spawnClassMember('swordsman'); if(key=='archer') spawnClassMember('archer'); if(key=='magicSword') spawnClassMember('swordsman','fire'); if(key=='magicArcher') spawnClassMember('archer','fire'); if(key=='fireMage') spawnClassMember('mage','fire'); if(key=='windArcher') spawnClassMember('archer','wind'); if(key=='windSword') spawnClassMember('swordsman','wind'); if(key=='waterArcher') spawnClassMember('archer','water'); if(key=='earthArcher') spawnClassMember('archer','earth'); document.querySelectorAll('.tool').forEach(x=>x.classList.remove('active')); d.classList.add('active');}; tb.appendChild(d); }); }
 function resize(){ W=canvas.width=canvas.clientWidth||window.innerWidth; H=canvas.height=canvas.clientHeight||200; ctx.fillStyle=colors.water; ctx.fillRect(0,0,W,H); }
 function log(t){document.getElementById('log').innerHTML='> '+t;}
 function countRace(r){return entities.filter(e=>e.race==r).length;}
@@ -117,8 +250,9 @@ function getPos(e){let r=canvas.getBoundingClientRect(); return {x:(e.touches?e.
 function paint(e){ let p=getPos(e), x=p.x, y=p.y;
   if(['land','water','sand','forest','mountain','lava'].includes(tool)){ ctx.fillStyle=colors[tool]; ctx.beginPath(); ctx.arc(x,y,brush,0,Math.PI*2); ctx.fill(); if(tool=='forest' && Math.random()<0.2) spawn('tree',x,y); }
   else if(['elfHouse','goblinCave','humanHouse','mermaidHouse','centaurHouse','lamiaHouse'].includes(tool)){ let map={elfHouse:'elf',goblinCave:'goblin',humanHouse:'human',mermaidHouse:'mermaid',centaurHouse:'centaur',lamiaHouse:'lamia'}; buildHouse(map[tool], x, y); }
-  else if(['lightning','meteor','tornado','ufo'].includes(tool)){ boom(x,y,tool); killNear(x,y, tool=='meteor'?90:60); log('DOOM!'); if(tool=='meteor'){ctx.fillStyle='#333'; ctx.beginPath(); ctx.arc(x,y,35,0,Math.PI*2); ctx.fill();} }
+  else if(['lightning','meteor','tornado','ufo'].includes(tool)){ boom(x,y,tool); let killed=killNear(x,y, tool=='meteor'?90:60); stats.totalDoom++; addHistory('doom','Tuhan menurunkan AZAB '+tool+'! '+killed+' makhluk mati!'); log('DOOM! '+killed+' mati!'); if(tool=='meteor'){ctx.fillStyle='#333'; ctx.beginPath(); ctx.arc(x,y,35,0,Math.PI*2); ctx.fill();} }
   else if(tool=='rain'){ log('Blessed rain! 🌧️'); }
+  else if(['mage','swordsman','archer','magicSword','magicArcher','fireMage','windArcher','windSword','waterArcher','earthArcher'].includes(tool)){ if(tool=='mage') spawnClassMember('mage',null,x,y); else if(tool=='swordsman') spawnClassMember('swordsman',null,x,y); else if(tool=='archer') spawnClassMember('archer',null,x,y); else if(tool=='magicSword') spawnClassMember('swordsman','fire',x,y); else if(tool=='magicArcher') spawnClassMember('archer','fire',x,y); else if(tool=='fireMage') spawnClassMember('mage','fire',x,y); else if(tool=='windArcher') spawnClassMember('archer','wind',x,y); else if(tool=='windSword') spawnClassMember('swordsman','wind',x,y); else if(tool=='waterArcher') spawnClassMember('archer','water',x,y); else if(tool=='earthArcher') spawnClassMember('archer','earth',x,y); }
   else if(RACES[tool]){ if(countRace(tool)>=60 && tool!='tree'){log(RACES[tool].name+' max 60!'); return;} spawn(tool,x,y); }
 }
 function getGender(maleChance){ return Math.random() < maleChance ? 'male' : 'female'; }
@@ -126,17 +260,9 @@ function genderIcon(g){ return g=='male' ? '♂️' : '♀️'; }
 function buildHouse(race, x, y){
   if(x===undefined||x===null){ x=Math.random()*W*0.8+20; y=Math.random()*H*0.8+20; }
   let info=RACES[race]; let cul=getCulture(race);
-  let houseData={
-    human:{emoji:'🏠',desc:'Human House built! Kingdom: Sunhaven | Culture: Kingdom Builders'},
-    elf:{emoji:'🌳🏡',desc:'Elf Tree House built! Kingdom: Elvenwood | Culture: Nature Worship'},
-    mermaid:{emoji:'🐚🏖️',desc:'Mermaid Beach House built! Kingdom: Pearldeep | Culture: Ocean Matriarchy'},
-    goblin:{emoji:'🕳️⛰️',desc:'Goblin Cave built! Kingdom: Stonehold | Culture: Tribe Survival'},
-    centaur:{emoji:'🛖🌾🍂',desc:'Centaur Hut built! Kingdom: Grassfield | Culture: Nomad Honor'},
-    lamia:{emoji:'🛖🌾🍂',desc:'Lamia Hut built! Kingdom: Scalewood | Culture: Serpent Matriarchy'}
-  }[race];
+  let houseData={ human:{emoji:'🏠',desc:'Human House built! Kingdom: Sunhaven | Culture: Kingdom Builders'}, elf:{emoji:'🌳🏡',desc:'Elf Tree House built! Kingdom: Elvenwood | Culture: Nature Worship'}, mermaid:{emoji:'🐚🏖️',desc:'Mermaid Beach House built! Kingdom: Pearldeep | Culture: Ocean Matriarchy'}, goblin:{emoji:'🕳️⛰️',desc:'Goblin Cave built! Kingdom: Stonehold | Culture: Tribe Survival'}, centaur:{emoji:'🛖🌾🍂',desc:'Centaur Hut built! Kingdom: Grassfield | Culture: Nomad Honor'}, lamia:{emoji:'🛖🌾🍂',desc:'Lamia Hut built! Kingdom: Scalewood | Culture: Serpent Matriarchy'} }[race];
   let el=document.createElement('div'); el.className='entity'; el.innerHTML='<div style="font-size:26px">'+houseData.emoji+'</div><small>'+info.name+' House - '+getKingdom(race)+'<br>'+cul.name+'</small>'; el.style.left=x+'px'; el.style.top=y+'px'; el.style.zIndex=5; layer.appendChild(el);
-  houses.push({el,x,y,race});
-  log(houseData.desc); updateHouseCounts();
+  houses.push({el,x,y,race}); stats.totalHouses++; log(houseData.desc); addHistory('house', houseData.desc); updateHouseCounts();
   if(race=='elf'){ ctx.fillStyle=colors.forest; ctx.beginPath(); ctx.arc(x,y+15,25,0,Math.PI*2); ctx.fill(); spawn('tree', x, y+15); }
   if(race=='goblin'){ ctx.fillStyle=colors.mountain; ctx.beginPath(); ctx.arc(x,y,30,0,Math.PI*2); ctx.fill(); }
   if(race=='lamia'){ ctx.fillStyle=colors.forest; ctx.beginPath(); ctx.arc(x,y,45,0,Math.PI*2); ctx.fill(); ctx.fillStyle=colors.water; ctx.beginPath(); ctx.arc(x+35,y+20,28,0,Math.PI*2); ctx.fill(); ctx.fillStyle='#8B4513'; ctx.beginPath(); ctx.arc(x,y,18,0,Math.PI*2); ctx.fill(); ctx.fillStyle='#f1c40f'; ctx.beginPath(); ctx.arc(x,y+5,12,0,Math.PI*2); ctx.fill(); for(let i=0;i<4;i++) spawn('tree', x+(Math.random()-0.5)*70, y+(Math.random()-0.5)*70); }
@@ -145,34 +271,29 @@ function buildHouse(race, x, y){
 }
 function buildElfHouse(){ buildHouse('elf'); }
 function buildGoblinCave(){ buildHouse('goblin'); }
-function updateHouseCounts(){
-  document.getElementById('cTreeHouse').innerText=houses.filter(h=>h.race=='elf').length;
-  document.getElementById('cCave').innerText=houses.filter(h=>h.race=='goblin').length;
-  document.getElementById('cLamiaHouse').innerText=houses.filter(h=>h.race=='lamia').length;
-  document.getElementById('cCentaurHouse').innerText=houses.filter(h=>h.race=='centaur').length;
-  document.getElementById('cShellHouse').innerText=houses.filter(h=>h.race=='mermaid').length;
+function updateHouseCounts(){ document.getElementById('cTreeHouse').innerText=houses.filter(h=>h.race=='elf').length; document.getElementById('cCave').innerText=houses.filter(h=>h.race=='goblin').length; document.getElementById('cLamiaHouse').innerText=houses.filter(h=>h.race=='lamia').length; document.getElementById('cCentaurHouse').innerText=houses.filter(h=>h.race=='centaur').length; document.getElementById('cShellHouse').innerText=houses.filter(h=>h.race=='mermaid').length; }
+function castWater(){ let mermaids=entities.filter(e=>e.race=='mermaid' || (e.isHybrid && e.hybridData.magic && e.hybridData.magic.includes('water'))); if(mermaids.length==0){ log('No Mermaid!'); return; } waterMagicCount++; stats.totalMagic++; document.getElementById('cWaterMagic').innerText=waterMagicCount; let x=Math.random()*W, y=Math.random()*H; ctx.fillStyle=colors.water; ctx.beginPath(); ctx.arc(x,y,50,0,Math.PI*2); ctx.fill(); boom(x,y,'water'); log('💧 WATER MAGIC!'); addHistory('magic','Sihir Air dipakai!'); }
+function castEarth(){ let elves=entities.filter(e=>e.race=='elf' || (e.isHybrid && e.hybridData.magic && e.hybridData.magic.includes('earth'))); if(elves.length==0){ log('No Elf!'); return; } earthMagicCount++; stats.totalMagic++; document.getElementById('cEarthMagic').innerText=earthMagicCount; let x=Math.random()*W, y=Math.random()*H; ctx.fillStyle=colors.land; ctx.beginPath(); ctx.arc(x,y,55,0,Math.PI*2); ctx.fill(); for(let i=0;i<5;i++) spawn('tree', x+(Math.random()-0.5)*80, y+(Math.random()-0.5)*80); boom(x,y,'earth'); log('🌿 EARTH MAGIC!'); addHistory('magic','Sihir Tanah dipakai!'); }
+function castHeal(){ entities.forEach(e=>{ if(e.race!='tree') e.age=Math.max(0, e.age-5); }); stats.totalMagic++; log('💚 HEAL! Everyone -5 years!'); addHistory('magic','Tuhan HEAL semua!'); }
+function castStorm(){ let queen=entities.find(e=>e.isQueen && e.race=='mermaid'); if(!queen){ log('Need Mermaid Queen! 👑'); return; } waterMagicCount+=2; stats.totalMagic++; document.getElementById('cWaterMagic').innerText=waterMagicCount; for(let i=0;i<3;i++){ let x=Math.random()*W, y=Math.random()*H; ctx.fillStyle=colors.water; ctx.beginPath(); ctx.arc(x,y,45,0,Math.PI*2); ctx.fill(); boom(x,y,'storm'); } log('🌊🌪️ MERMAID QUEEN STORM!'); addHistory('magic','Ratu Mermaid mengeluarkan BADAI!'); }
+function boom(x,y,type){ let m={water:'💧',earth:'🌿',storm:'🌊',lightning:'⚡',meteor:'☄️',tornado:'🌪️',ufo:'🛸',fireSlash:'🔥⚔️',fireArrow:'🔥🏹',windArrow:'🌪️🏹',windSlash:'🌪️⚔️',waterArrow:'💧🏹',earthArrow:'🌿🏹',magic:'✨'}[type]||'✨'; let e=document.createElement('div'); e.className='entity'; e.innerText=m; e.style.fontSize='28px'; e.style.left=x+'px'; e.style.top=y+'px'; e.style.zIndex=20; layer.appendChild(e); setTimeout(()=>e.remove(),800); }
+function updateQueens(){ ['mermaid','lamia'].forEach(race=>{ let females=entities.filter(e=>e.race==race && e.gender=='female'); let oldQueen=entities.find(e=>e.isQueen && e.race==race); entities.forEach(e=>{ if(e.race==race) e.isQueen=false; }); let elQ=document.getElementById(race=='mermaid'?'queenMermaid':'queenLamia'); if(females.length>0){ females.sort((a,b)=>b.age-a.age); let queen=females[0]; queen.isQueen=true; if(!oldQueen || oldQueen!==queen){ stats.totalQueens++; addHistory('queen','👑 Ratu baru '+race+'! Clan '+queen.clan+' Kingdom '+queen.kingdom); } if(elQ) elQ.innerText='👑 Clan '+queen.clan+' Fam #'+queen.familyId+' Kingdom '+queen.kingdom+' Culture '+queen.culture+' Age '+queen.age; refreshEntityLabel(queen); } else if(elQ) elQ.innerText='- extinct -'; }); }
+function refreshEntityLabel(en){
+  let info=en.isHybrid?en.hybridData:RACES[en.race]; let crown=en.isQueen?'👑':''; let preg=en.pregnant?'🤰 '+en.pregnantDays+'/'+en.pregnancyTotal+'d ':''; let magicIcon = info.magic=='water'?'💧':info.magic=='earth'?'🌿':(info.magic && info.magic.includes('water') && info.magic.includes('earth'))?'💧🌿':'';
+  let dc=getDisplayClass(en); let clsClass = dc=='magicSword'?'magicSword':dc=='magicArcher'?'magicArcher':en.cls=='mage'?'mage':'';
+  en.el.className='entity '+(en.isHybrid?'hybrid ':'')+(en.isQueen?'queen ':'')+(en.pregnant?'pregnant ':'')+(clsClass?clsClass+' ':'')+(en.gender=='male'?'male':'female');
+  let clsIcon = dc=='magicSword'?'🔥⚔️':dc=='magicArcher'?'🔥🏹':en.cls=='mage'?'🧙':en.cls=='swordsman'?'⚔️':en.cls=='archer'?'🏹':'';
+  let elemIcon = en.element?ELEMENT_EMOJI[en.element]:'';
+  en.el.innerHTML='<div style="font-size:15px">'+crown+(en.pregnant?'🤰':'')+info.emoji+magicIcon+clsIcon+elemIcon+'</div><small>'+(en.isHybrid?'✨':'')+crown+preg+genderIcon(en.gender)+' '+info.name+' '+en.age+'/'+info.maxAge+' [Clan '+en.clan+'] Fam #'+en.familyId+'<br>'+getClassLabel(en)+' | '+en.culture+' 👶'+(en.children||0)+'</small>';
 }
-function castWater(){ let mermaids=entities.filter(e=>e.race=='mermaid' || (e.isHybrid && e.hybridData.magic && e.hybridData.magic.includes('water'))); if(mermaids.length==0){ log('No Mermaid!'); return; } waterMagicCount++; document.getElementById('cWaterMagic').innerText=waterMagicCount; let x=Math.random()*W, y=Math.random()*H; ctx.fillStyle=colors.water; ctx.beginPath(); ctx.arc(x,y,50,0,Math.PI*2); ctx.fill(); boom(x,y,'water'); log('💧 WATER MAGIC!'); }
-function castEarth(){ let elves=entities.filter(e=>e.race=='elf' || (e.isHybrid && e.hybridData.magic && e.hybridData.magic.includes('earth'))); if(elves.length==0){ log('No Elf!'); return; } earthMagicCount++; document.getElementById('cEarthMagic').innerText=earthMagicCount; let x=Math.random()*W, y=Math.random()*H; ctx.fillStyle=colors.land; ctx.beginPath(); ctx.arc(x,y,55,0,Math.PI*2); ctx.fill(); for(let i=0;i<5;i++) spawn('tree', x+(Math.random()-0.5)*80, y+(Math.random()-0.5)*80); boom(x,y,'earth'); log('🌿 EARTH MAGIC!'); }
-function castHeal(){ entities.forEach(e=>{ if(e.race!='tree') e.age=Math.max(0, e.age-5); }); log('💚 HEAL! Everyone -5 years!'); }
-function castStorm(){ let queen=entities.find(e=>e.isQueen && e.race=='mermaid'); if(!queen){ log('Need Mermaid Queen! 👑'); return; } waterMagicCount+=2; document.getElementById('cWaterMagic').innerText=waterMagicCount; for(let i=0;i<3;i++){ let x=Math.random()*W, y=Math.random()*H; ctx.fillStyle=colors.water; ctx.beginPath(); ctx.arc(x,y,45,0,Math.PI*2); ctx.fill(); boom(x,y,'storm'); } log('🌊🌪️ MERMAID QUEEN STORM!'); }
-function boom(x,y,type){ let m={water:'💧',earth:'🌿',storm:'🌊',lightning:'⚡',meteor:'☄️',tornado:'🌪️',ufo:'🛸'}[type]||'✨'; let e=document.createElement('div'); e.className='entity'; e.innerText=m; e.style.fontSize='45px'; e.style.left=x+'px'; e.style.top=y+'px'; e.style.zIndex=20; layer.appendChild(e); setTimeout(()=>e.remove(),900); }
-function updateQueens(){ ['mermaid','lamia'].forEach(race=>{ let females=entities.filter(e=>e.race==race && e.gender=='female'); entities.forEach(e=>{ if(e.race==race) e.isQueen=false; }); let elQ=document.getElementById(race=='mermaid'?'queenMermaid':'queenLamia'); if(females.length>0){ females.sort((a,b)=>b.age-a.age); let queen=females[0]; queen.isQueen=true; if(elQ) elQ.innerText='👑 Clan '+queen.clan+' Fam #'+queen.familyId+' Kingdom '+queen.kingdom+' Culture '+queen.culture+' Age '+queen.age; refreshEntityLabel(queen); } else if(elQ) elQ.innerText='- extinct -'; }); }
-function refreshEntityLabel(en){ let info=en.isHybrid?en.hybridData:RACES[en.race]; let crown=en.isQueen?'👑':''; let preg=en.pregnant?'🤰 PREGNANT '+en.pregnantDays+'/'+en.pregnancyTotal+'d ':''; let magicIcon = info.magic=='water'?'💧':info.magic=='earth'?'🌿':(info.magic && info.magic.includes('water') && info.magic.includes('earth'))?'💧🌿':''; en.el.className='entity '+(en.isHybrid?'hybrid ':'')+(en.isQueen?'queen ':'')+(en.pregnant?'pregnant ':'')+(en.gender=='male'?'male':'female'); en.el.innerHTML='<div style="font-size:15px">'+crown+(en.pregnant?'🤰':'')+info.emoji+magicIcon+'</div><small>'+(en.isHybrid?'✨':'')+crown+preg+genderIcon(en.gender)+' '+info.name+' '+en.age+'/'+info.maxAge+' [Clan '+en.clan+'] Fam #'+en.familyId+'<br>'+en.culture+' 👶'+(en.children||0)+'</small>'; }
-// FUNGSI LAHIRAN - dipanggil kalau kehamilan selesai
 function giveBirth(mother){
-  let fatherInfo=mother.pregnantFather;
-  let isHybrid = mother.pregnantIsHybrid;
-  let total=mother.pregnancyTotal;
+  let fatherInfo=mother.pregnantFather; let isHybrid=mother.pregnantIsHybrid; let total=mother.pregnancyTotal;
   mother.pregnant=false; mother.pregnantDays=0; mother.pregnancyTotal=0; mother.pregnantFather=null;
-  if(isHybrid){
-    makeHybrid(mother, fatherInfo, mother.x+10, mother.y+10);
-    log('👶 Born after '+total+' days pregnancy! Hybrid! Mother: Clan '+mother.clan+' Culture '+mother.culture);
-  } else {
+  if(isHybrid){ makeHybrid(mother, fatherInfo, mother.x+10, mother.y+10); }
+  else {
     let child=spawn(mother.race, mother.x+8, mother.y+8, mother.clan, mother.familyId, mother.kingdom, mother.culture);
-    if(fatherInfo) fatherInfo.children=(fatherInfo.children||0)+1;
-    mother.children=(mother.children||0)+1;
-    log('👶 Born after '+total+' days pregnancy! '+mother.race+' Clan '+mother.clan+' Fam #'+mother.familyId+' Kingdom '+mother.kingdom+' Culture '+mother.culture+' Child #'+mother.children+' (Pregnancy: '+total+' days)');
+    if(mother.cls || (fatherInfo && fatherInfo.cls)){ child.cls = Math.random()<0.5 ? mother.cls : (fatherInfo?fatherInfo.cls:'swordsman'); child.element = Math.random()<0.5 ? mother.element : (fatherInfo?fatherInfo.element:null); refreshEntityLabel(child); }
+    if(fatherInfo) fatherInfo.children=(fatherInfo.children||0)+1; mother.children=(mother.children||0)+1; stats.totalBorn++; stats.birthsByClan[mother.clan]=(stats.birthsByClan[mother.clan]||0)+1; stats.birthsByRace[mother.race]=(stats.birthsByRace[mother.race]||0)+1; addHistory('birth','👶 Lahir setelah '+total+' hari hamil! '+mother.race+' Clan '+mother.clan+' Class: '+getClassLabel(child)); log('👶 Born! '+mother.race+' Class: '+getClassLabel(child));
   }
   refreshEntityLabel(mother);
 }
@@ -187,10 +308,11 @@ function makeHybrid(parentA, parentB, x, y){
   let displayName = coolNames[name] || (name + ' ✨'); let emoji = a.emoji + b.emoji; let gender = getGender(maleChance); let magicIcon = magic=='water'?'💧':magic=='earth'?'🌿':magic.includes('water')&&magic.includes('earth')?'💧🌿':'';
   let clan = mother.clan || 'Mixed'; let familyId = familyCounter++; let kingdom = 'Mixed Kingdom'; let culture = motherCulture;
   mother.children=(mother.children||0)+1; father.children=(father.children||0)+1;
+  let hybridCls = mother.cls || father.cls || assignClass('hybrid'); let hybridElem = mother.element || father.element || assignElement('hybrid', magic);
   let el=document.createElement('div'); el.className='entity hybrid '+(gender=='male'?'male':'female'); el.innerHTML='<div style="font-size:15px">'+emoji+magicIcon+'</div><small>✨'+genderIcon(gender)+' '+displayName+' 0/'+maxAge+' [Clan '+clan+'] Fam #'+familyId+'<br>'+culture+'</small>'; el.style.left=x+'px'; el.style.top=y+'px'; layer.appendChild(el);
-  let hybridData={emoji,name:displayName,maxAge,speed,breed,attack,maleChance,culture:culture,magic}; entities.push({el,x,y,race:'hybrid',isHybrid:true,hybridData,age:0,gender,clan,familyId,kingdom,culture,children:0,parents:[mother.familyId,father.familyId]});
-  log('HYBRID BORN! '+displayName+' Clan '+clan+' Fam #'+familyId+' Culture '+culture+' ✨');
-  updateClanBar();
+  let hybridData={emoji,name:displayName,maxAge,speed,breed,attack,maleChance,culture:culture,magic}; let newEnt={el,x,y,race:'hybrid',isHybrid:true,hybridData,age:0,gender,clan,familyId,kingdom,culture,children:0,parents:[mother.familyId,father.familyId],cls:hybridCls,element:hybridElem}; entities.push(newEnt); refreshEntityLabel(newEnt);
+  stats.totalBorn++; stats.totalHybrid++; stats.birthsByClan[clan]=(stats.birthsByClan[clan]||0)+1; stats.birthsByRace['hybrid']=(stats.birthsByRace['hybrid']||0)+1;
+  log('HYBRID BORN! '+displayName+' Class: '+getClassLabel(newEnt)+' ✨'); addHistory('hybrid','✨ Hybrid lahir! '+displayName+' Clan '+clan+' Class: '+getClassLabel(newEnt)); updateClanBar();
 }
 function spawn(race,x,y,inheritClan,inheritFamily,inheritKingdom,inheritCulture){
   if(W==0) resize(); let info=RACES[race]; let gender = race=='tree' ? 'female' : getGender(info.maleChance);
@@ -198,81 +320,99 @@ function spawn(race,x,y,inheritClan,inheritFamily,inheritKingdom,inheritCulture)
   let clan = inheritClan || randomClan(race); let familyId = inheritFamily || familyCounter++; let kingdom = inheritKingdom || getKingdom(race); let culture = inheritCulture || info.culture || 'Mixed Heritage';
   if(race=='tree'){ clan='-'; familyId='-'; kingdom='Nature'; culture='Nature'; }
   let el=document.createElement('div'); el.className='entity '+(gender=='male'?'male':'female'); el.innerHTML=info.emoji+magicIcon+'<small>'+genderIcon(gender)+' 0/'+info.maxAge+' [Clan '+clan+'] Fam #'+familyId+'<br>'+culture+'</small>'; el.style.fontSize='20px'; el.style.left=x+'px'; el.style.top=y+'px'; layer.appendChild(el);
-  let ent={el,x,y,race,type:info.emoji,age:0,gender,clan,familyId,kingdom,culture,children:0,pregnant:false,pregnantDays:0,pregnancyTotal:0,pregnantFather:null,pregnantIsHybrid:false};
-  entities.push(ent); updateQueens(); updateClanBar(); return ent;
+  let cls = race=='tree'?null:assignClass(race); let element = race=='tree'?null:assignElement(race, info.magic);
+  let ent={el,x,y,race,type:info.emoji,age:0,gender,clan,familyId,kingdom,culture,children:0,pregnant:false,pregnantDays:0,pregnancyTotal:0,pregnantFather:null,pregnantIsHybrid:false,cls,element};
+  entities.push(ent); if(ent.cls) refreshEntityLabel(ent); updateQueens(); updateClanBar(); return ent;
 }
-function killNear(x,y,r){ entities=entities.filter(en=>{ let dx=en.x-x, dy=en.y-y; if(Math.sqrt(dx*dx+dy*dy)<r && en.race!='tree'){ if(en.pregnant) log('💔 Pregnant '+en.race+' died! Baby lost!'); en.el.innerHTML='💀'; setTimeout(()=>en.el.remove(),700); return false; } return true; }); updateQueens(); updateClanBar(); }
-function forceHybrid(){ let females=entities.filter(e=>e.race!='tree' && e.gender=='female' && !e.pregnant); let males=entities.filter(e=>e.race!='tree' && e.gender=='male'); if(females.length==0||males.length==0){ alert('Need 1 female (not pregnant) + 1 male!'); return; } let mom=females[0], dad=males[0]; let total=getPregnancyDays(0,true,mom.isHybrid?mom.hybridData.maxAge:RACES[mom.race].maxAge, dad.isHybrid?dad.hybridData.maxAge:RACES[dad.race].maxAge); mom.pregnant=true; mom.pregnantDays=0; mom.pregnancyTotal=total; mom.pregnantFather=dad; mom.pregnantIsHybrid=true; refreshEntityLabel(mom); log('🤰 '+mom.race+' pregnant! Hybrid baby in '+total+' days! (Long Life = 2x)'); }
+function killNear(x,y,r){ let count=0; entities=entities.filter(en=>{ let dx=en.x-x, dy=en.y-y; if(Math.sqrt(dx*dx+dy*dy)<r && en.race!='tree'){ count++; if(en.pregnant) addHistory('death','💔 '+en.race+' Clan '+en.clan+' yang hamil mati kena Azab!'); en.el.innerHTML='💀'; setTimeout(()=>en.el.remove(),700); return false; } return true; }); updateQueens(); updateClanBar(); return count; }
+function forceHybrid(){ let females=entities.filter(e=>e.race!='tree' && e.gender=='female' && !e.pregnant); let males=entities.filter(e=>e.race!='tree' && e.gender=='male'); if(females.length==0||males.length==0){ alert('Need 1 female + 1 male!'); return; } let mom=females[0], dad=males[0]; let total=getPregnancyDays(true, mom.isHybrid?mom.hybridData.maxAge:RACES[mom.race].maxAge, dad.isHybrid?dad.hybridData.maxAge:RACES[dad.race].maxAge); mom.pregnant=true; mom.pregnantDays=0; mom.pregnancyTotal=total; mom.pregnantFather=dad; mom.pregnantIsHybrid=true; refreshEntityLabel(mom); addHistory('pregnant','🤰 Hybrid hamil! Ibu '+mom.race+' + Ayah '+dad.race+' Bayi '+total+' hari lagi!'); }
 canvas.addEventListener('touchstart',e=>{drawing=true; paint(e);}); canvas.addEventListener('touchmove',e=>{if(drawing) paint(e); e.preventDefault();}); canvas.addEventListener('touchend',()=>drawing=false);
 canvas.addEventListener('mousedown',e=>{drawing=true; paint(e);}); canvas.addEventListener('mousemove',e=>{if(drawing) paint(e);}); canvas.addEventListener('mouseup',()=>drawing=false);
-function spawnRandom(){ for(let i=0;i<3;i++){let x=Math.random()*W, y=Math.random()*H; ctx.fillStyle=colors.land; ctx.beginPath(); ctx.arc(x,y,70,0,Math.PI*2); ctx.fill();} ['human','elf','mermaid','goblin','centaur','lamia'].forEach(r=>{ for(let i=0;i<3;i++) spawn(r, 40+Math.random()*(W-80), 40+Math.random()*(H-80)); }); log('6 races + Pregnancy created! Human 5 days, Long Life 10 days! 🌍🤰'); updateClanBar(); }
+function spawnRandom(){ let loaded=loadGame(); for(let i=0;i<3;i++){let x=Math.random()*W, y=Math.random()*H; ctx.fillStyle=colors.land; ctx.beginPath(); ctx.arc(x,y,70,0,Math.PI*2); ctx.fill();} if(!loaded) addHistory('world','🌍 Dunia dibuat! 6 ras pertama + Class System v15!'); else addHistory('world','💾 Save dimuat! Lanjut Hari '+day); ['human','elf','mermaid','goblin','centaur','lamia'].forEach(r=>{ for(let i=0;i<3;i++){ let e=spawn(r, 40+Math.random()*(W-80), 40+Math.random()*(H-80)); if(!loaded) addHistory('birth','👶 '+r+' lahir! Clan '+e.clan+' Class: '+getClassLabel(e)); } }); log('v15 Class & Aerodinamis ready! ⚔️🏹🧙‍♂️🌪️'); updateClanBar(); }
 window.onresize=resize;
 document.getElementById('brush').oninput=e=>{brush=+e.target.value; document.getElementById('brushVal').innerText=brush;};
 resize(); renderTools(); spawnRandom();
-setInterval(()=>{
-  day++; document.getElementById('cDay').innerText=day; updateQueens(); updateClanBar();
-  if(day%5==0){
-    let elves=entities.filter(e=>e.race=='elf'); let goblins=entities.filter(e=>e.race=='goblin');
-    if(elves.length>=3 && houses.filter(h=>h.race=='elf').length < Math.floor(elves.length/3)){ let e=elves[0]; buildHouse('elf', e.x, e.y-20); }
-    if(goblins.length>=3 && houses.filter(h=>h.race=='goblin').length < Math.floor(goblins.length/3)){ let g=goblins[0]; buildHouse('goblin', g.x, g.y+10); }
-  }
-  let snapshot=[...entities];
-  snapshot.forEach(en=>{
-    if(!entities.includes(en) || en.race=='tree') return;
-    let info = en.isHybrid ? en.hybridData : RACES[en.race];
-    en.age++;
-    // PREGNANCY CHECK - tiap hari nambah 1 hari kehamilan
-    if(en.pregnant){
-      en.pregnantDays++;
-      refreshEntityLabel(en);
-      if(en.pregnantDays>=en.pregnancyTotal){ giveBirth(en); }
-      // Ibu hamil jalan lebih lambat, gak bisa kawin lagi
-      en.x=Math.max(0,Math.min(W-30, en.x+(Math.random()-0.5)*info.speed*0.5));
-      en.y=Math.max(0,Math.min(H-30, en.y+(Math.random()-0.5)*info.speed*0.5));
+setInterval(()=>{ saveGame(); }, 5000);
+function classAttack(en){
+  if(!en.cls || en.pregnant) return;
+  let dc=getDisplayClass(en);
+  let range = dc=='magicSword' ? 25 : dc=='swordsman' ? 22 : dc=='magicArcher' ? 65 : dc=='archer' ? 55 : dc=='mage' ? 60 : 22;
+  // v15 - Wind lebih cepet karena AERODINAMIS, bukan sihir! Water/Earth cuma infuse, gak ada efek lambat/kejebak
+  let attackChance = (dc=='magicArcher' && en.element=='wind') ? 0.7 : (dc=='magicSword' && en.element=='wind') ? 0.6 : (dc=='mage' ? 0.3 : 0.4);
+  if(Math.random()>attackChance) return;
+  let target=entities.find(o=>o!==en && o.race!='tree' && o.race!=en.race && !o.pregnant && Math.abs(o.x-en.x)<range && Math.abs(o.y-en.y)<range);
+  if(!target) return;
+  if(dc=='magicSword'){
+    if(en.element=='fire') boom(en.x, en.y, 'fireSlash');
+    else if(en.element=='water') boom(en.x, en.y, 'water');
+    else if(en.element=='wind') boom(en.x, en.y, 'windSlash');
+    else if(en.element=='earth') boom(en.x, en.y, 'earth');
+  } else if(dc=='magicArcher'){
+    if(en.element=='fire') boom(target.x, target.y, 'fireArrow');
+    else if(en.element=='wind') boom(target.x, target.y, 'windArrow');
+    else if(en.element=='water') boom(target.x, target.y, 'waterArrow');
+    else if(en.element=='earth') boom(target.x, target.y, 'earthArrow');
+  } else if(dc=='mage'){ boom(target.x, target.y, 'magic'); }
+  else if(dc=='archer'){ boom(target.x, target.y, 'windArrow'); }
+  else if(dc=='swordsman'){ boom(en.x, en.y, 'fireSlash'); }
+  target.el.innerHTML='💀<small>KILLED by '+getClassLabel(en)+'</small>'; setTimeout(()=>target.el.remove(),600); entities=entities.filter(e=>e!==target);
+  stats.totalKilled++; stats.killsByClan[en.clan]=(stats.killsByClan[en.clan]||0)+1; stats.killsByClass[getClassLabel(en)]=(stats.killsByClass[getClassLabel(en)]||0)+1;
+  if(dc=='magicSword') stats.totalMagicSwordKills++;
+  if(dc=='magicArcher') stats.totalMagicArcherKills++;
+  // v15 - Log elemen yang bener: Wind = Aerodinamis cepet, Water/Earth/Fire = Infuse doang
+  let extra = dc=='magicSword' && en.element=='wind' ? ' Tebasan Pedang ANGIN lebih cepet! Aerodinamis! 🌪️⚔️ Pedang ketiup angin!' : dc=='magicArcher' && en.element=='wind' ? ' Panah ANGIN lebih cepet! Aerodinamis! 🌪️🏹 Panah ketiup angin!' : dc=='magicSword' ? ' Elemen '+en.element+' masuk ke pedang! '+ELEMENT_EMOJI[en.element]+'⚔️' : dc=='magicArcher' ? ' Elemen '+en.element+' masuk ke panah! '+ELEMENT_EMOJI[en.element]+'🏹' : dc=='mage' && en.element ? ' Elemen '+en.element+' masuk ke sihir! '+ELEMENT_EMOJI[en.element]+'🧙' : '';
+  addHistory('kill','⚔️ '+getClassLabel(en)+' Clan '+en.clan+' MEMBUNUH '+(target.isHybrid?target.hybridData.name:RACES[target.race].name)+' Clan '+target.clan+'!'+extra);
+  log('⚔️ '+getClassLabel(en)+' bunuh '+RACES[target.race].name+'!'+extra);
+  updateQueens(); updateClanBar();
+}
+function gameLoop(){
+  if(!paused){
+    day++; document.getElementById('cDay').innerText=day; updateQueens(); updateClanBar();
+    if(day%5==0){ let elves=entities.filter(e=>e.race=='elf'); let goblins=entities.filter(e=>e.race=='goblin'); if(elves.length>=3 && houses.filter(h=>h.race=='elf').length < Math.floor(elves.length/3)){ let e=elves[0]; buildHouse('elf', e.x, e.y-20); } if(goblins.length>=3 && houses.filter(h=>h.race=='goblin').length < Math.floor(goblins.length/3)){ let g=goblins[0]; buildHouse('goblin', g.x, g.y+10); } }
+    let snapshot=[...entities];
+    snapshot.forEach(en=>{
+      if(!entities.includes(en) || en.race=='tree') return;
+      let info = en.isHybrid ? en.hybridData : RACES[en.race];
+      en.age++;
+      if(en.pregnant){ en.pregnantDays++; refreshEntityLabel(en); if(en.pregnantDays>=en.pregnancyTotal){ giveBirth(en); } en.x=Math.max(0,Math.min(W-30, en.x+(Math.random()-0.5)*info.speed*0.5)); en.y=Math.max(0,Math.min(H-30, en.y+(Math.random()-0.5)*info.speed*0.5)); en.el.style.left=en.x+'px'; en.el.style.top=en.y+'px'; return; }
+      let cultureBonus = 1;
+      if(en.culture=='Nature Worship'){ let nearTree=entities.some(o=>o.race=='tree' && Math.abs(o.x-en.x)<30 && Math.abs(o.y-en.y)<30); if(nearTree && Math.random()<0.1){ en.age=Math.max(0,en.age-1); } }
+      if(en.culture=='Tribe Survival'){ let goblinNear=entities.filter(o=>o.race=='goblin' && Math.abs(o.x-en.x)<40 && Math.abs(o.y-en.y)<40).length; if(goblinNear>=3) cultureBonus=2; }
+      if(en.culture=='Serpent Matriarchy'){ let lamiaNear=entities.filter(o=>o.race=='lamia' && Math.abs(o.x-en.x)<40 && Math.abs(o.y-en.y)<40).length; if(lamiaNear>=2) cultureBonus=1.5; }
+      if(en.culture=='Kingdom Builders'){ let houseNear=houses.some(h=>Math.abs(h.x-en.x)<40 && Math.abs(h.y-en.y)<40); if(houseNear) cultureBonus=1.5; }
+      let speedBoost = en.isQueen ? 1.5 : 1;
+      // v15 - Wind = Aerodinamis! Jalan juga lebih cepet karena ketiup angin
+      if(getDisplayClass(en)=='magicArcher' && en.element=='wind') speedBoost*=1.5;
+      if(getDisplayClass(en)=='magicSword' && en.element=='wind') speedBoost*=1.3;
+      if(en.isQueen) refreshEntityLabel(en);
+      else { let small=en.el.querySelector('small'); if(small) small.innerText=genderIcon(en.gender)+' '+(en.isHybrid?info.name:info.name)+' '+en.age+'/'+info.maxAge+' [Clan '+en.clan+'] Fam #'+en.familyId+' '+getClassLabel(en)+' '+en.culture+' 👶'+(en.children||0); }
+      if(en.age>=info.maxAge){ let wasQueen=en.isQueen; let cul=getCulture(en.race, en.isHybrid); en.el.innerHTML='💀<small>DIED - '+cul.burial+'</small>'; setTimeout(()=>en.el.remove(),1000); entities=entities.filter(e=>e!==en); stats.totalDied++; stats.deathsByClan[en.clan]=(stats.deathsByClan[en.clan]||0)+1; stats.deathsByRace[en.race]=(stats.deathsByRace[en.race]||0)+1; if(wasQueen){ addHistory('queen','👑 Ratu '+info.name+' Clan '+en.clan+' WAFAT umur '+en.age+'!'); log('👑 RATU WAFAT!'); } else { addHistory('death','⚰️ '+info.name+' Clan '+en.clan+' Class: '+getClassLabel(en)+' mati tua umur '+en.age+'! Burial: '+cul.burial); log(info.name+' mati tua '+en.age+'th ⚰️'); } updateQueens(); updateClanBar(); return; }
+      en.x=Math.max(0,Math.min(W-30, en.x+(Math.random()-0.5)*info.speed*speedBoost*cultureBonus));
+      en.y=Math.max(0,Math.min(H-30, en.y+(Math.random()-0.5)*info.speed*speedBoost*cultureBonus));
       en.el.style.left=en.x+'px'; en.el.style.top=en.y+'px';
-      return; // skip breed & attack pas hamil, ibu hamil istirahat
-    }
-    let cultureBonus = 1;
-    if(en.culture=='Nature Worship'){ let nearTree=entities.some(o=>o.race=='tree' && Math.abs(o.x-en.x)<30 && Math.abs(o.y-en.y)<30); if(nearTree && Math.random()<0.1){ en.age=Math.max(0,en.age-1); } }
-    if(en.culture=='Tribe Survival'){ let goblinNear=entities.filter(o=>o.race=='goblin' && Math.abs(o.x-en.x)<40 && Math.abs(o.y-en.y)<40).length; if(goblinNear>=3) cultureBonus=2; }
-    if(en.culture=='Serpent Matriarchy'){ let lamiaNear=entities.filter(o=>o.race=='lamia' && Math.abs(o.x-en.x)<40 && Math.abs(o.y-en.y)<40).length; if(lamiaNear>=2) cultureBonus=1.5; }
-    if(en.culture=='Kingdom Builders'){ let houseNear=houses.some(h=>Math.abs(h.x-en.x)<40 && Math.abs(h.y-en.y)<40); if(houseNear) cultureBonus=1.5; }
-    let speedBoost = en.isQueen ? 1.5 : 1;
-    if(en.isQueen) refreshEntityLabel(en);
-    else { let small=en.el.querySelector('small'); if(small) small.innerText=genderIcon(en.gender)+' '+(en.isHybrid?info.name:info.name)+' '+en.age+'/'+info.maxAge+' [Clan '+en.clan+'] Fam #'+en.familyId+' '+en.culture+' 👶'+(en.children||0); }
-    if(en.age>=info.maxAge){ let wasQueen=en.isQueen; let cul=getCulture(en.race, en.isHybrid); en.el.innerHTML='💀<small>DIED - '+cul.burial+'</small>'; setTimeout(()=>en.el.remove(),1000); entities=entities.filter(e=>e!==en); if(wasQueen) log('👑 QUEEN '+info.name+' Clan '+en.clan+' DIED!'); else log((en.isHybrid?info.name:info.name)+' Clan '+en.clan+' died old '+en.age+'y ⚰️ Burial: '+cul.burial); updateQueens(); updateClanBar(); return; }
-    en.x=Math.max(0,Math.min(W-30, en.x+(Math.random()-0.5)*info.speed*speedBoost*cultureBonus));
-    en.y=Math.max(0,Math.min(H-30, en.y+(Math.random()-0.5)*info.speed*speedBoost*cultureBonus));
-    en.el.style.left=en.x+'px'; en.el.style.top=en.y+'px';
-    if(info.magic=='water' && Math.random()<0.08){ ctx.fillStyle='rgba(30,144,255,0.5)'; ctx.beginPath(); ctx.arc(en.x,en.y,12,0,Math.PI*2); ctx.fill(); }
-    if(info.magic=='earth' && Math.random()<0.08){ if(countRace('tree')<80){ spawn('tree', en.x+(Math.random()-0.5)*40, en.y+(Math.random()-0.5)*40); earthMagicCount++; document.getElementById('cEarthMagic').innerText=earthMagicCount; } }
-    if(info.attack){ let prey=entities.find(o=>o!==en && o.race!='tree' && o.race!=en.race && !o.pregnant && Math.abs(o.x-en.x)<20 && Math.abs(o.y-en.y)<20); if(prey && Math.random()<0.4){ prey.el.innerHTML='💀<small>KILLED</small>'; setTimeout(()=>prey.el.remove(),600); entities=entities.filter(e=>e!==prey); log((en.isHybrid?info.name:info.name)+' Clan '+en.clan+' killed '+(prey.isHybrid?prey.hybridData.name:RACES[prey.race].name)+'! ⚔️'); updateQueens(); } }
-    if(Math.random()<info.breed*cultureBonus){
-      let near=entities.filter(o=>o!==en && o.race!='tree' && o.race!='sheep' && o.race!='wolf' && o.gender!=en.gender && !o.pregnant && Math.abs(o.x-en.x)<40 && Math.abs(o.y-en.y)<40);
-      if(near.length>0){ let mate=near[Math.floor(Math.random()*near.length)];
-        // KAWIN = BIKIN HAMIL, BUKAN LANGSUNG LAHIR!
-        let mother = en.gender=='female'?en:mate; let father = mother==en?mate:en;
-        if(mother.pregnant) return; // udah hamil, gak bisa hamil lagi
-        if(mate.race==en.race && !en.isHybrid && !mate.isHybrid){
-          if(countRace(en.race)<60){
-            let total=getPregnancyDays(en.race,false,0,0);
-            mother.pregnant=true; mother.pregnantDays=0; mother.pregnancyTotal=total; mother.pregnantFather=father; mother.pregnantIsHybrid=false;
-            refreshEntityLabel(mother);
-            log('🤰 '+mother.race+' pregnant! Clan '+mother.clan+' Fam #'+mother.familyId+' Baby in '+total+' days! Father: Clan '+father.clan+' (Pregnancy: '+total+' days)');
-          }
-        } else { if(entities.length<120){ let total=getPregnancyDays(0,true,mother.isHybrid?mother.hybridData.maxAge:RACES[mother.race].maxAge, father.isHybrid?father.hybridData.maxAge:RACES[father.race].maxAge); mother.pregnant=true; mother.pregnantDays=0; mother.pregnancyTotal=total; mother.pregnantFather=father; mother.pregnantIsHybrid=true; refreshEntityLabel(mother); log('🤰 Hybrid pregnancy! Mother '+mother.race+' + Father '+father.race+' Baby in '+total+' days! (Long Life = 2x)'); } }
+      if(info.magic=='water' && Math.random()<0.08){ ctx.fillStyle='rgba(30,144,255,0.5)'; ctx.beginPath(); ctx.arc(en.x,en.y,12,0,Math.PI*2); ctx.fill(); }
+      if(info.magic=='earth' && Math.random()<0.08){ if(countRace('tree')<80){ spawn('tree', en.x+(Math.random()-0.5)*40, en.y+(Math.random()-0.5)*40); earthMagicCount++; document.getElementById('cEarthMagic').innerText=earthMagicCount; } }
+      classAttack(en);
+      if(Math.random()<info.breed*cultureBonus){
+        let near=entities.filter(o=>o!==en && o.race!='tree' && o.race!='sheep' && o.race!='wolf' && o.gender!=en.gender && !o.pregnant && Math.abs(o.x-en.x)<40 && Math.abs(o.y-en.y)<40);
+        if(near.length>0){ let mate=near[Math.floor(Math.random()*near.length)]; let mother = en.gender=='female'?en:mate; let father = mother==en?mate:en; if(mother.pregnant) return;
+          if(mate.race==en.race && !en.isHybrid && !mate.isHybrid){ if(countRace(en.race)<60){ let total=getPregnancyForRace(en.race); mother.pregnant=true; mother.pregnantDays=0; mother.pregnancyTotal=total; mother.pregnantFather=father; mother.pregnantIsHybrid=false; stats.totalPregnant++; refreshEntityLabel(mother); addHistory('pregnant','🤰 '+mother.race+' Clan '+mother.clan+' Class: '+getClassLabel(mother)+' HAMIL! Ayah: '+father.race+' Class: '+getClassLabel(father)+' Bayi '+total+' hari lagi!'); log('🤰 '+mother.race+' hamil! Bayi '+total+' hari lagi!'); } }
+          else { if(entities.length<120){ let total=getPregnancyDays(true, mother.isHybrid?mother.hybridData.maxAge:RACES[mother.race].maxAge, father.isHybrid?father.hybridData.maxAge:RACES[father.race].maxAge); mother.pregnant=true; mother.pregnantDays=0; mother.pregnancyTotal=total; mother.pregnantFather=father; mother.pregnantIsHybrid=true; stats.totalPregnant++; refreshEntityLabel(mother); addHistory('pregnant','🤰 Hybrid hamil! Ibu '+mother.race+' Class: '+getClassLabel(mother)+' + Ayah '+father.race+' Class: '+getClassLabel(father)+' Bayi '+total+' hari lagi!'); log('🤰 Hybrid hamil!'); } }
+        }
       }
-    }
-  });
-  document.getElementById('cHuman').innerText=countRace('human');
-  document.getElementById('cElf').innerText=countRace('elf');
-  document.getElementById('cMermaid').innerText=countRace('mermaid');
-  document.getElementById('cGoblin').innerText=countRace('goblin');
-  document.getElementById('cCentaur').innerText=countRace('centaur');
-  document.getElementById('cLamia').innerText=countRace('lamia');
-  document.getElementById('cHybrid').innerText=entities.filter(e=>e.isHybrid).length;
-  updateHouseCounts(); updateClanBar();
-},2000);
+    });
+    document.getElementById('cHuman').innerText=countRace('human');
+    document.getElementById('cElf').innerText=countRace('elf');
+    document.getElementById('cMermaid').innerText=countRace('mermaid');
+    document.getElementById('cGoblin').innerText=countRace('goblin');
+    document.getElementById('cCentaur').innerText=countRace('centaur');
+    document.getElementById('cLamia').innerText=countRace('lamia');
+    document.getElementById('cHybrid').innerText=entities.filter(e=>e.isHybrid).length;
+    updateHouseCounts(); updateClanBar();
+  }
+  setTimeout(gameLoop, speedValues[speedMode]);
+}
+gameLoop();
 </script>
 </body>
 </html>
