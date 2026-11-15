@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>WORLDBOX KW v22.0 - UMUR + HAMIL SAMA RUMUS!</title>
+<title>WORLDBOX KW v22.3 - DUNIA HIDUP + PERADABAN!</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box;font-family:Arial,sans-serif;touch-action:none}
 body{background:#111;color:white;overflow:hidden}
@@ -21,23 +21,31 @@ body{background:#111;color:white;overflow:hidden}
 .entity.leader{outline:2px solid #ff00ff;border-radius:10px;background:rgba(255,0,255,0.15)}
 .entity.pregnant{outline:2px solid #ff69b4;border-radius:10px}
 .centaurImg{width:38px;height:52px;object-fit:contain}
+.centaurMini{width:18px;height:24px;object-fit:contain;vertical-align:middle}
 .stackChar{display:flex;flex-direction:column;align-items:center;line-height:0.85;font-size:18px}
+.stackMini{display:inline-flex;flex-direction:column;align-items:center;line-height:0.8;font-size:10px;vertical-align:middle}
 #controlRow{display:flex;gap:6px;padding:6px;background:#222}
 #controlRow button{flex:1;padding:12px;border:none;border-radius:12px;font-weight:bold;font-size:12px}
 #log{height:36px;background:#000;color:#ffeb3b;font-size:12px;padding:6px;overflow:hidden;text-align:center}
-#summonPanel,#chronoPanel,#statsPanel,#favPanel,#mapPanel{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.97);z-index:200;flex-direction:column;overflow-y:auto}
+#summonPanel,#chronoPanel,#statsPanel,#favPanel,#mapPanel,#civPanel{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.97);z-index:200;flex-direction:column;overflow-y:auto}
 .summonGrid{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;padding:8px}
 .summonItem{background:#333;border:2px solid #444;border-radius:12px;padding:12px 2px;text-align:center;font-size:11px;cursor:pointer}
 .statRow{display:flex;justify-content:space-between;align-items:center;padding:10px 14px;background:#1e1e1e;margin:4px 10px;border-radius:10px}
 .statRow.zero{opacity:0.45}
 .statSection{padding:14px 14px 4px;font-weight:bold;color:gold;font-size:14px}
 .statTotal{padding:10px 14px;background:#2a2a4a;margin:8px 10px;border-radius:10px;font-weight:bold;text-align:center}
+.popCard{background:#1e1e1e;margin:4px 10px;padding:10px 14px;border-radius:10px;display:flex;justify-content:space-between;align-items:center;border-left:4px solid #00c853}
+.popCard.zero{opacity:0.45;border-left-color:#555}
 .chronoItem{background:#1e1e1e;padding:10px;margin:0 10px 6px;border-radius:10px;font-size:13px;border-left:4px solid #555}
 .chronoItem.birth{border-color:#00c853}
 .chronoItem.death{border-color:#888}
 .chronoItem.killed{border-color:#e74c3c}
 .chronoItem.special{border-color:#ff00ff;background:#2a1a2a}
 .chronoItem.queen{border-color:gold;background:#2a2a1a}
+.chronoItem.hunt{border-color:#ff9800;background:#2a1a0a}
+.chronoItem.farm{border-color:#4caf50;background:#0a2a0a}
+.chronoItem.civ{border-color:#2196f3;background:#0a1a2a}
+.chronoItem.sect{border-color:#9c27b0;background:#1a0a2a}
 .favCard{background:#1e1e1e;margin:6px 10px;padding:12px;border-radius:12px;border:2px solid gold}
 .favCard.dead{opacity:0.5;border-color:#555}
 .pregBar{background:#333;height:8px;border-radius:4px;overflow:hidden;margin-top:4px}
@@ -45,23 +53,25 @@ body{background:#111;color:white;overflow:hidden}
 </style>
 </head>
 <body>
-<div id="header"><img src="centaur.png"><span>🌍 WORLDBOX KW v22.0 - UMUR + HAMIL SAMA! ✨</span><img src="centaur.png"></div>
-<div id="topInfo"><div class="calDate" id="calDate">Senin, 1 Januari Tahun 1</div><div class="calTime" id="calTime">🕐 00:00 WIB - Dunia Baru!</div><div class="calGame" id="calGame">🌍 Hari ke-1 di Dunia | v22.0 | Umur + Hamil Hybrid = Rata-rata Ortu!</div></div>
+<div id="header"><img src="centaur.png"><span>🌍 WORLDBOX KW v22.3 - DUNIA HIDUP! ✨</span><img src="centaur.png"></div>
+<div id="topInfo"><div class="calDate" id="calDate">Senin, 1 Januari Tahun 1</div><div class="calTime" id="calTime">🕐 00:00 WIB - Dunia Baru!</div><div class="calGame" id="calGame">🌍 Hari ke-1 di Dunia | v22.3 | Berburu, Berkebun, Beternak, Desa, Kota, Kerajaan, Sekte!</div></div>
 <div id="worldWrap"><canvas id="canvas"></canvas><div id="entityLayer"></div></div>
 <div id="controlRow"><button id="btnPause" style="background:#ff9800;color:white" onclick="togglePause()">⏸️ PAUSE</button><button style="background:#2196f3;color:white" onclick="changeSpeed()">⏩ <span id="speedLabel">15s</span></button><button style="background:#ff00ff;color:white" onclick="openSummon()">✨ SUMMON</button><button style="background:#27ae60;color:white" onclick="openMap()">🗺️ MAP</button></div>
-<div id="log">> v22.0! Umur Hybrid juga rata-rata ortu! Elfan umur 105 thn, hamil 10.5 bln!</div>
+<div id="log">> v22.3! Dunia sekarang HIDUP! Ada yang berburu, berkebun, dirikan desa, kota, kerajaan, sekte!</div>
 <div style="display:flex;gap:6px;padding:6px;background:#222"><button style="flex:1;padding:12px;background:#f39c12;color:white;border:none;border-radius:12px;font-weight:bold" onclick="openStats()">📊 STATS</button><button style="flex:1;padding:12px;background:#9b59b6;color:white;border:none;border-radius:12px;font-weight:bold" onclick="openChrono()">📜 KRONOLOGI</button><button style="flex:1;padding:12px;background:#ffd700;color:#000;border:none;border-radius:12px;font-weight:bold" onclick="openFav()">⭐ FAVORIT (<span id="favCount">0</span>)</button></div>
-<div style="display:flex;gap:6px;padding:0 6px 6px;background:#222"><button style="flex:1;padding:10px;background:#8e44ad;color:white;border:none;border-radius:12px;font-weight:bold" onclick="skipOneMonth()">⏩ SKIP 1 BULAN</button><button id="btnToggleAnimal" style="flex:1;padding:10px;background:#00b894;color:white;border:none;border-radius:12px;font-weight:bold" onclick="toggleAnimalView()">👁️ LIHAT HEWAN</button><button style="flex:1;padding:10px;background:#e74c3c;color:white;border:none;border-radius:12px;font-weight:bold" onclick="resetWorld()">🔄 RESET</button></div>
-<div style="text-align:center;font-size:11px;color:#aaa;background:#222;padding-bottom:6px">👑 <span id="leaderBar">Memilih Raja/Ratu...</span> | 🤰 Hamil: <span id="pregBar">0 orang</span> | ✨ Hybrid: <span id="hybridBar">0 orang</span></div>
+<div style="display:flex;gap:6px;padding:0 6px 6px;background:#222"><button style="flex:1;padding:10px;background:#2196f3;color:white;border:none;border-radius:12px;font-weight:bold" onclick="openCiv()">🏘️ PERADABAN</button><button style="flex:1;padding:10px;background:#8e44ad;color:white;border:none;border-radius:12px;font-weight:bold" onclick="skipOneMonth()">⏩ SKIP 1 BULAN</button><button id="btnToggleAnimal" style="flex:1;padding:10px;background:#00b894;color:white;border:none;border-radius:12px;font-weight:bold" onclick="toggleAnimalView()">👁️ LIHAT HEWAN</button><button style="flex:1;padding:10px;background:#e74c3c;color:white;border:none;border-radius:12px;font-weight:bold" onclick="resetWorld()">🔄 RESET</button></div>
+<div style="text-align:center;font-size:11px;color:#aaa;background:#222;padding-bottom:6px">👑 <span id="leaderBar">Memilih Raja/Ratu...</span> | 🏘️ Desa: <span id="civBar">0</span> | 🤰 Hamil: <span id="pregBar">0 orang</span> | ✨ Hybrid: <span id="hybridBar">0 orang</span></div>
 
-<div id="summonPanel"><div style="padding:14px;background:#1a1a2e;text-align:center;position:sticky;top:0;z-index:10"><h2 style="color:#ff00ff">✨ SUMMON MENU v22.0 ✨</h2><div style="text-align:center;margin:8px"><img src="centaur.png" style="width:80px;height:110px;object-fit:contain"></div><div style="display:flex;gap:6px"><button style="flex:1;padding:10px;background:#555;color:white;border:none;border-radius:12px;font-weight:bold" onclick="clearBrush()">✋ CLEAR BRUSH</button><button style="flex:1;padding:10px;background:#00c853;color:white;border:none;border-radius:12px;font-weight:bold" onclick="addOneOfEach();closeSummon()">✨ +1 EACH RACE</button></div><div style="display:flex;gap:6px;margin-top:6px"><button style="flex:1;padding:10px;background:#8e44ad;color:white;border:none;border-radius:12px;font-weight:bold" onclick="skipOneMonth();closeSummon()">⏩ SKIP 1 BULAN</button><button style="flex:1;padding:10px;background:#ff9800;color:white;border:none;border-radius:12px;font-weight:bold" onclick="summonRandom10();closeSummon()">🎲 RANDOM 10 RACE!</button><button onclick="closeSummon()" style="flex:1;padding:10px;background:#e74c3c;color:white;border:none;border-radius:12px;font-weight:bold">❌ CLOSE</button></div><div style="margin-top:8px;background:#222;padding:8px;border-radius:10px;font-size:12px;text-align:left">🧬 <b>RUMUS SAMA UNTUK UMUR + HAMIL!</b><br>• Ras Murni = Ngikutin dia sendiri!<br>Human 80 thn, Hamil 9 bln | Elf 130 thn, Hamil 12 bln<br>• Hybrid = Rata-rata kedua ortunya!<br>Elfan = Umur (80+130)/2 = <b>105 thn!</b> Hamil (9+12)/2 = <b>10.5 bln!</b><br>Aquelf = Umur (130+130)/2 = <b>130 thn!</b> Hamil (12+12)/2 = <b>12 bln!</b></div></div><div style="padding:10px 10px 0;font-weight:bold;color:gold">🏝️ WORLD</div><div class="summonGrid" id="summonWorld"></div><div style="padding:10px 10px 0;font-weight:bold;color:gold">🧬 RACE CERDAS - Human = Eropa + Jepang!</div><div class="summonGrid" id="summonRace"></div><div style="padding:10px 10px 0;font-weight:bold;color:gold">🐾 ANIMALS - Hitungan EKOR!</div><div class="summonGrid" id="summonAnimals"></div><div style="padding:10px 10px 0;font-weight:bold;color:gold">🏡 HOUSE</div><div class="summonGrid" id="summonHouse"></div><div style="padding:10px 10px 0;font-weight:bold;color:gold">⚔️ CLASS</div><div class="summonGrid" id="summonClass"></div><div style="padding:10px 10px 0;font-weight:bold;color:gold">✨ MAGIC</div><div class="summonGrid" id="summonMagic"></div><div style="padding:10px 10px 0;font-weight:bold;color:gold">⚡ DOOM</div><div class="summonGrid" id="summonDoom"></div><div style="padding:12px"><button onclick="closeSummon()" style="width:100%;padding:12px;background:#e74c3c;color:white;border:none;border-radius:12px;font-weight:bold">❌ CLOSE</button></div></div>
+<div id="summonPanel"><div style="padding:14px;background:#1a1a2e;text-align:center;position:sticky;top:0;z-index:10"><h2 style="color:#ff00ff">✨ SUMMON MENU v22.3 ✨</h2><div style="text-align:center;margin:8px"><img src="centaur.png" style="width:80px;height:110px;object-fit:contain"></div><div style="display:flex;gap:6px"><button style="flex:1;padding:10px;background:#555;color:white;border:none;border-radius:12px;font-weight:bold" onclick="clearBrush()">✋ CLEAR BRUSH</button><button style="flex:1;padding:10px;background:#00c853;color:white;border:none;border-radius:12px;font-weight:bold" onclick="addOneOfEach();closeSummon()">✨ +1 EACH RACE</button></div><div style="display:flex;gap:6px;margin-top:6px"><button style="flex:1;padding:10px;background:#8e44ad;color:white;border:none;border-radius:12px;font-weight:bold" onclick="skipOneMonth();closeSummon()">⏩ SKIP 1 BULAN</button><button style="flex:1;padding:10px;background:#ff9800;color:white;border:none;border-radius:12px;font-weight:bold" onclick="summonRandom10();closeSummon()">🎲 RANDOM 10 RACE!</button><button onclick="closeSummon()" style="flex:1;padding:10px;background:#e74c3c;color:white;border:none;border-radius:12px;font-weight:bold">❌ CLOSE</button></div><div style="margin-top:8px;background:#222;padding:8px;border-radius:10px;font-size:12px;text-align:left">🏘️ <b>PERADABAN OTOMATIS!</b><br>• Berburu, Berkebun, Beternak, Jinakin Hewan<br>• Bikin Rumah, Dirikan Klan, Keluarga Bangsawan<br>• Dirikan Desa -> Kota -> Kerajaan<br>• Proklamasi Ketua Sekte Budaya!<br>Semua tercatat di KRONOLOGI!</div></div><div style="padding:10px 10px 0;font-weight:bold;color:gold">🏝️ WORLD</div><div class="summonGrid" id="summonWorld"></div><div style="padding:10px 10px 0;font-weight:bold;color:gold">🧬 RACE CERDAS</div><div class="summonGrid" id="summonRace"></div><div style="padding:10px 10px 0;font-weight:bold;color:gold">🐾 ANIMALS</div><div class="summonGrid" id="summonAnimals"></div><div style="padding:10px 10px 0;font-weight:bold;color:gold">🏡 HOUSE</div><div class="summonGrid" id="summonHouse"></div><div style="padding:10px 10px 0;font-weight:bold;color:gold">⚔️ CLASS</div><div class="summonGrid" id="summonClass"></div><div style="padding:10px 10px 0;font-weight:bold;color:gold">✨ MAGIC</div><div class="summonGrid" id="summonMagic"></div><div style="padding:10px 10px 0;font-weight:bold;color:gold">⚡ DOOM</div><div class="summonGrid" id="summonDoom"></div><div style="padding:12px"><button onclick="closeSummon()" style="width:100%;padding:12px;background:#e74c3c;color:white;border:none;border-radius:12px;font-weight:bold">❌ CLOSE</button></div></div>
 
-<div id="chronoPanel"><div style="padding:14px;background:#1a1a2e;text-align:center;position:sticky;top:0;z-index:10"><h2 style="color:#c39bd3">📜 KRONOLOGI DUNIA v22.0</h2><p id="chronoSummary">Total 0 kejadian</p><p id="chronoCal" style="font-size:12px;color:#ffeb3b"></p><div style="display:flex;gap:4px;margin-top:8px;flex-wrap:wrap"><button onclick="setChronoFilter('all')" id="btnChAll" style="flex:1;padding:8px;background:#9b59b6;color:white;border:none;border-radius:10px;font-weight:bold">SEMUA</button><button onclick="setChronoFilter('birth')" id="btnChBirth" style="flex:1;padding:8px;background:#333;color:white;border:none;border-radius:10px">👶 LAHIR</button><button onclick="setChronoFilter('death')" id="btnChDeath" style="flex:1;padding:8px;background:#333;color:white;border:none;border-radius:10px">💀 MATI</button><button onclick="setChronoFilter('special')" id="btnChSpecial" style="flex:1;padding:8px;background:#333;color:white;border:none;border-radius:10px">✨ SPESIAL</button><button onclick="setChronoFilter('queen')" id="btnChQueen" style="flex:1;padding:8px;background:#333;color:white;border:none;border-radius:10px">👑 RAJA/RATU</button></div><div style="margin-top:8px"><button onclick="skipOneMonth()" style="width:100%;padding:10px;background:#8e44ad;color:white;border:none;border-radius:10px;font-weight:bold">⏩ SKIP 1 BULAN (30 Hari)</button></div></div><div id="chronoList" style="flex:1;overflow-y:auto;padding:10px 0"></div><div style="padding:10px;background:#222;position:sticky;bottom:0;display:flex;gap:6px"><button onclick="clearChrono()" style="flex:1;padding:12px;background:#555;color:white;border:none;border-radius:12px">🗑️ HAPUS RIWAYAT</button><button onclick="closeChrono()" style="flex:2;padding:12px;background:#e74c3c;color:white;border:none;border-radius:12px;font-weight:bold">❌ CLOSE</button></div></div>
+<div id="chronoPanel"><div style="padding:14px;background:#1a1a2e;text-align:center;position:sticky;top:0;z-index:10"><h2 style="color:#c39bd3">📜 KRONOLOGI DUNIA v22.3</h2><p id="chronoSummary">Total 0 kejadian</p><p id="chronoCal" style="font-size:12px;color:#ffeb3b"></p><div style="display:flex;gap:4px;margin-top:8px;flex-wrap:wrap"><button onclick="setChronoFilter('all')" id="btnChAll" style="flex:1;padding:8px;background:#9b59b6;color:white;border:none;border-radius:10px;font-weight:bold">SEMUA</button><button onclick="setChronoFilter('birth')" id="btnChBirth" style="flex:1;padding:8px;background:#333;color:white;border:none;border-radius:10px">👶 LAHIR</button><button onclick="setChronoFilter('death')" id="btnChDeath" style="flex:1;padding:8px;background:#333;color:white;border:none;border-radius:10px">💀 MATI</button><button onclick="setChronoFilter('hunt')" id="btnChHunt" style="flex:1;padding:8px;background:#333;color:white;border:none;border-radius:10px">🏹 BERBURU</button><button onclick="setChronoFilter('farm')" id="btnChFarm" style="flex:1;padding:8px;background:#333;color:white;border:none;border-radius:10px">🌾 TANI</button><button onclick="setChronoFilter('civ')" id="btnChCiv" style="flex:1;padding:8px;background:#333;color:white;border:none;border-radius:10px">🏘️ PERADABAN</button><button onclick="setChronoFilter('sect')" id="btnChSect" style="flex:1;padding:8px;background:#333;color:white;border:none;border-radius:10px">🕯️ SEKTE</button><button onclick="setChronoFilter('special')" id="btnChSpecial" style="flex:1;padding:8px;background:#333;color:white;border:none;border-radius:10px">✨ SPESIAL</button></div><div style="margin-top:8px"><button onclick="skipOneMonth()" style="width:100%;padding:10px;background:#8e44ad;color:white;border:none;border-radius:10px;font-weight:bold">⏩ SKIP 1 BULAN (30 Hari)</button></div></div><div id="chronoList" style="flex:1;overflow-y:auto;padding:10px 0"></div><div style="padding:10px;background:#222;position:sticky;bottom:0;display:flex;gap:6px"><button onclick="clearChrono()" style="flex:1;padding:12px;background:#555;color:white;border:none;border-radius:12px">🗑️ HAPUS RIWAYAT</button><button onclick="closeChrono()" style="flex:2;padding:12px;background:#e74c3c;color:white;border:none;border-radius:12px;font-weight:bold">❌ CLOSE</button></div></div>
 
-<div id="favPanel"><div style="padding:14px;background:#1a1a2e;text-align:center;position:sticky;top:0;z-index:10"><h2 style="color:gold">⭐ KARAKTER FAVORIT v22.0</h2><p id="favSummary">Belum ada favorit</p><p style="font-size:12px;color:#aaa">Pencet karakter di pulau buat nandain!</p></div><div id="favList" style="flex:1;overflow-y:auto;padding:10px 0"></div><div style="padding:10px;background:#222;position:sticky;bottom:0"><button onclick="closeFav()" style="width:100%;padding:12px;background:#e74c3c;color:white;border:none;border-radius:12px;font-weight:bold">❌ CLOSE</button></div></div>
+<div id="civPanel"><div style="padding:14px;background:#1a1a2e;text-align:center;position:sticky;top:0;z-index:10"><h2 style="color:#2196f3">🏘️ PERADABAN DUNIA v22.3</h2><p id="civSummary">Belum ada peradaban</p></div><div id="civList" style="flex:1;overflow-y:auto;padding:10px 0"></div><div style="padding:10px;background:#222;position:sticky;bottom:0"><button onclick="closeCiv()" style="width:100%;padding:12px;background:#e74c3c;color:white;border:none;border-radius:12px;font-weight:bold">❌ CLOSE</button></div></div>
 
-<div id="statsPanel"><div style="padding:14px;background:#1a1a2e;text-align:center;position:sticky;top:0;z-index:5"><h2 style="color:gold">📊 STATS v22.0 - UMUR + HAMIL SAMA!</h2><p id="statsSummary">Day 1</p><div id="statsCal" style="font-size:12px;color:#ffeb3b;margin-top:4px"></div><div style="display:flex;gap:6px;margin-top:8px"><button onclick="setStatsFilter('all')" id="btnStatAll" style="flex:1;padding:8px;background:#ff9800;color:white;border:none;border-radius:10px;font-weight:bold">SEMUA</button><button onclick="setStatsFilter('alive')" id="btnStatAlive" style="flex:1;padding:8px;background:#333;color:white;border:none;border-radius:10px;font-weight:bold">YANG HIDUP AJA</button><button onclick="setStatsFilter('dead')" id="btnStatDead" style="flex:1;padding:8px;background:#333;color:white;border:none;border-radius:10px;font-weight:bold">YANG PUNAH (0)</button></div><div style="margin-top:8px"><button onclick="skipOneMonth()" style="width:100%;padding:10px;background:#8e44ad;color:white;border:none;border-radius:10px;font-weight:bold">⏩ SKIP 1 BULAN</button></div></div><div id="statsContent" style="flex:1;overflow-y:auto;padding-bottom:20px"></div><div style="padding:10px;background:#222;position:sticky;bottom:0"><button onclick="closeStats()" style="width:100%;padding:14px;background:#e74c3c;color:white;border:none;border-radius:12px;font-weight:bold;font-size:16px">❌ CLOSE</button></div></div>
-<div id="mapPanel"><div style="padding:12px;background:#1a1a2e;text-align:center"><h2 style="color:gold">🗺️ MAP v22.0</h2><p id="mapSummary">Day 1</p><button onclick="skipOneMonth()" style="padding:10px 20px;background:#8e44ad;color:white;border:none;border-radius:12px;margin-bottom:6px">⏩ SKIP 1 BULAN</button><br><button onclick="closeMap()" style="padding:10px 20px;background:#e74c3c;color:white;border:none;border-radius:12px">❌ CLOSE MAP</button></div><canvas id="miniMap" style="width:100%;height:260px;background:#0A4D8C"></canvas><div id="mapInfo" style="padding:12px"></div></div>
+<div id="favPanel"><div style="padding:14px;background:#1a1a2e;text-align:center;position:sticky;top:0;z-index:10"><h2 style="color:gold">⭐ KARAKTER FAVORIT v22.3</h2><p id="favSummary">Belum ada favorit</p><p style="font-size:12px;color:#aaa">Pencet karakter di pulau buat nandain!</p></div><div id="favList" style="flex:1;overflow-y:auto;padding:10px 0"></div><div style="padding:10px;background:#222;position:sticky;bottom:0"><button onclick="closeFav()" style="width:100%;padding:12px;background:#e74c3c;color:white;border:none;border-radius:12px;font-weight:bold">❌ CLOSE</button></div></div>
+
+<div id="statsPanel"><div style="padding:14px;background:#1a1a2e;text-align:center;position:sticky;top:0;z-index:5"><h2 style="color:gold">📊 STATS v22.3 - POPULASI + PERADABAN!</h2><p id="statsSummary">Day 1</p><div id="statsCal" style="font-size:12px;color:#ffeb3b;margin-top:4px"></div><div style="display:flex;gap:6px;margin-top:8px"><button onclick="setStatsFilter('all')" id="btnStatAll" style="flex:1;padding:8px;background:#ff9800;color:white;border:none;border-radius:10px;font-weight:bold">SEMUA</button><button onclick="setStatsFilter('alive')" id="btnStatAlive" style="flex:1;padding:8px;background:#333;color:white;border:none;border-radius:10px;font-weight:bold">YANG HIDUP AJA</button><button onclick="setStatsFilter('dead')" id="btnStatDead" style="flex:1;padding:8px;background:#333;color:white;border:none;border-radius:10px;font-weight:bold">YANG PUNAH (0)</button></div><div style="margin-top:8px"><button onclick="skipOneMonth()" style="width:100%;padding:10px;background:#8e44ad;color:white;border:none;border-radius:10px;font-weight:bold">⏩ SKIP 1 BULAN</button></div></div><div id="statsContent" style="flex:1;overflow-y:auto;padding-bottom:20px"></div><div style="padding:10px;background:#222;position:sticky;bottom:0"><button onclick="closeStats()" style="width:100%;padding:14px;background:#e74c3c;color:white;border:none;border-radius:12px;font-weight:bold;font-size:16px">❌ CLOSE</button></div></div>
+<div id="mapPanel"><div style="padding:12px;background:#1a1a2e;text-align:center"><h2 style="color:gold">🗺️ MAP v22.3</h2><p id="mapSummary">Day 1</p><button onclick="skipOneMonth()" style="padding:10px 20px;background:#8e44ad;color:white;border:none;border-radius:12px;margin-bottom:6px">⏩ SKIP 1 BULAN</button><br><button onclick="closeMap()" style="padding:10px 20px;background:#e74c3c;color:white;border:none;border-radius:12px">❌ CLOSE MAP</button></div><canvas id="miniMap" style="width:100%;height:260px;background:#0A4D8C"></canvas><div id="mapInfo" style="padding:12px"></div></div>
 
 <script>
 let canvas=document.getElementById('canvas'), ctx=canvas.getContext('2d'), layer=document.getElementById('entityLayer');
@@ -70,13 +80,39 @@ let showAnimals=false, worldStartTime=Date.now(), nextEntId=1, favorites=[];
 let speedLabels=['Stop Motion 15s','Stop Motion 15s','Stop Motion 15s'], speedValues=[15000,15000,15000];
 let HARI=['Minggu','Senin','Selasa','Rabu','Kamis','Jumat','Sabtu'];
 let BULAN=['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
+// v22.3 - PERADABAN!
+let villages=[], cities=[], kingdoms=[], sects=[], nobleFamilies=[], clansFounded=[], tamedAnimals=[];
+let civStats={hunt:0,farm:0,ranch:0,tame:0,house:0,clan:0,noble:0,village:0,city:0,kingdom:0,sect:0,craft:0,trade:0};
 function getWorldDate(){ let base=new Date(); base.setFullYear(1,0,1); base.setHours(0,0,0,0); let d=new Date(base.getTime() + (day-1)*24*60*60*1000); return d; }
 function getWorldDateStr(){ let wd=getWorldDate(); return HARI[wd.getDay()]+', '+wd.getDate()+' '+BULAN[wd.getMonth()]+' Tahun '+wd.getFullYear(); }
-function updateCalendar(){ let wd=getWorldDate(); let elapsedSec=Math.floor((Date.now()-worldStartTime)/1000); let totalMenit=elapsedSec; let jam=Math.floor(totalMenit/60)%24; let menit=totalMenit%60; let jamStr=String(jam).padStart(2,'0'); let menitStr=String(menit).padStart(2,'0'); let dEl=document.getElementById('calDate'); if(dEl) dEl.innerText=HARI[wd.getDay()]+', '+wd.getDate()+' '+BULAN[wd.getMonth()]+' Tahun '+wd.getFullYear(); let tEl=document.getElementById('calTime'); if(tEl) tEl.innerText='🕐 '+jamStr+':'+menitStr+' WIB - '+(wd.getFullYear()==1 && day<=7 ? 'Dunia Baru!' : 'Tahun '+wd.getFullYear()); let gEl=document.getElementById('calGame'); if(gEl) gEl.innerText='🌍 Hari ke-'+day+' di Dunia | v22.0 | Umur + Hamil = Rata-rata Ortu!'; let sEl=document.getElementById('statsCal'); if(sEl) sEl.innerText=getWorldDateStr()+' | '+jamStr+':'+menitStr+' WIB'; let cEl=document.getElementById('chronoCal'); if(cEl) cEl.innerText=getWorldDateStr()+' | Hari ke-'+day; }
+function raceIcon(race){
+  if(race=='centaur') return '<img src="centaur.png" class="centaurMini">';
+  if(race=='lamia') return '<span class="stackMini"><span>🧍‍♀️</span><span>🐍</span></span>';
+  if(race=='human') return '🧍';
+  if(race=='elf') return '🧝';
+  if(race=='mermaid') return '🧜';
+  if(race=='goblin') return '🧌';
+  return RACES[race]?RACES[race].emoji:'❓';
+}
+function updateCalendar(){
+  let wd=getWorldDate();
+  let elapsedSec=Math.floor((Date.now()-worldStartTime)/1000);
+  let totalMenit=elapsedSec;
+  let jam=Math.floor(totalMenit/60)%24;
+  let menit=totalMenit%60;
+  let jamStr=String(jam).padStart(2,'0');
+  let menitStr=String(menit).padStart(2,'0');
+  let dEl=document.getElementById('calDate'); if(dEl) dEl.innerText=getWorldDateStr();
+  let tEl=document.getElementById('calTime'); if(tEl) tEl.innerText='🕐 '+jamStr+':'+menitStr+' WIB - '+(wd.getFullYear()==1 && day<=7 ? 'Dunia Baru!' : 'Tahun '+wd.getFullYear());
+  let gEl=document.getElementById('calGame'); if(gEl) gEl.innerText='🌍 Hari ke-'+day+' di Dunia | v22.3 | Desa '+villages.length+' | Kota '+cities.length+' | Kerajaan '+kingdoms.length+' | Sekte '+sects.length;
+  let sSum=document.getElementById('statsSummary');
+  if(sSum && document.getElementById('statsPanel').style.display=='flex'){ sSum.innerText='Hari ke-'+day+' | '+getWorldDateStr(); }
+  let sEl=document.getElementById('statsCal'); if(sEl) sEl.innerText=getWorldDateStr()+' | '+jamStr+':'+menitStr+' WIB';
+  let cEl=document.getElementById('chronoCal'); if(cEl) cEl.innerText=getWorldDateStr()+' | Hari ke-'+day;
+  let cb=document.getElementById('civBar'); if(cb) cb.innerText=villages.length+' Desa, '+cities.length+' Kota, '+kingdoms.length+' Kerajaan, '+sects.length+' Sekte';
+  let pb=document.getElementById('popBar'); if(pb) pb.innerText=entities.length+' makhluk';
+}
 setInterval(updateCalendar,1000); updateCalendar();
-// v22.0 - RUMUS SAMA UNTUK UMUR + HAMIL!
-// - Ras Murni: ngikutin dia sendiri!
-// - Hybrid: rata-rata KEDUA ORANG TUA-nya! Umur + Hamil dua-duanya!
 let HYBRID_NAMES={
   'elf|human':'Elfan','human|elf':'Elfan',
   'human|mermaid':'Merhuman','mermaid|human':'Merhuman',
@@ -111,16 +147,8 @@ function getHybridName(mother, father){
 function getHybridEmoji(hybridName){ if(HYBRID_EMOJI[hybridName]) return HYBRID_EMOJI[hybridName]; return '✨'; }
 function getBasePregnancy(race){ let map={human:270,elf:360,mermaid:360,goblin:270,centaur:330,lamia:270,hybrid:270}; return map[race]||270; }
 function getBaseMaxAge(race){ let map={human:29200,elf:47450,mermaid:47450,goblin:29200,centaur:47450,lamia:29200,hybrid:29200}; return map[race]||29200; }
-function getMaxAgeForEntity(ent){
-  if(!ent) return 29200;
-  if(ent.isHybrid && ent.hybridData && ent.hybridData.maxAge) return ent.hybridData.maxAge;
-  return getBaseMaxAge(ent.race);
-}
-function getPregnancyForEntity(ent){
-  if(!ent) return 270;
-  if(ent.isHybrid && ent.hybridData && ent.hybridData.pregnancy) return ent.hybridData.pregnancy;
-  return getBasePregnancy(ent.race);
-}
+function getMaxAgeForEntity(ent){ if(!ent) return 29200; if(ent.isHybrid && ent.hybridData && ent.hybridData.maxAge) return ent.hybridData.maxAge; return getBaseMaxAge(ent.race); }
+function getPregnancyForEntity(ent){ if(!ent) return 270; if(ent.isHybrid && ent.hybridData && ent.hybridData.pregnancy) return ent.hybridData.pregnancy; return getBasePregnancy(ent.race); }
 function getPregnancyDaysForMother(motherEnt){ return getPregnancyForEntity(motherEnt); }
 function getPregnancyDays(race, ent){ return getPregnancyForEntity(ent||{race:race}); }
 function getAnimalPregnancy(race){
@@ -141,6 +169,196 @@ function formatPregnancy(en){
   return '🤰 HAMIL '+monthsNow+' / '+monthsTotal+' bulan ('+en.pregnantDays+'/'+total+' hari) - '+pct+'%'+extra;
 }
 function formatMonths(days){ let m=days/30; return (Math.round(m*10)/10)+' bulan ('+days+' hari)'; }
+// v22.3 - SISTEM KEHIDUPAN + PERADABAN! Dipanggil tiap hari di gameLoop!
+function pickRandomSmart(){ let list=entities.filter(e=>!isAnimal(e.race)); if(!list.length) return null; return list[Math.floor(Math.random()*list.length)]; }
+function doLifeEvent(){
+  let en=pickRandomSmart(); if(!en) return;
+  let r=Math.random();
+  let name=getEntNameNoTitle(en);
+  let raceLabel=en.isHybrid?en.hybridData.hybridName:en.race;
+  // 1. BERBURU 18%
+  if(r<0.18){
+    civStats.hunt++;
+    let prey=['rusa','babi hutan','kelinci','ayam hutan','ikan','bebek'][Math.floor(Math.random()*6)];
+    let hasil=Math.floor(Math.random()*4)+1;
+    if(Math.random()<0.75){
+      addHistory('hunt','🏹 '+name+' ('+raceLabel+') BERBURU '+prey+'! Berhasil dapet '+hasil+' daging! 🏹');
+      en.huntCount=(en.huntCount||0)+1;
+      if(en.huntCount>=3 && !en.titleHunter){ en.titleHunter=true; addHistory('special','🏹 '+name+' jadi PEMBURU HANDAL! Udah berburu 3x!'); }
+    } else {
+      addHistory('hunt','🏹 '+name+' ('+raceLabel+') GAGAL berburu '+prey+'! Malah dikejar '+prey+'! 😅');
+    }
+    return;
+  }
+  // 2. BERKEBUN 18%
+  if(r<0.36){
+    civStats.farm++;
+    let crop=['gandum','sayur','buah','jagung','padi','wortel'][Math.floor(Math.random()*6)];
+    let hasil=Math.floor(Math.random()*6)+2;
+    addHistory('farm','🌾 '+name+' ('+raceLabel+') BERKEBUN! Nanam '+crop+'! Panen '+hasil+' '+crop+'! 🌾');
+    en.farmCount=(en.farmCount||0)+1;
+    if(en.farmCount>=3 && !en.titleFarmer){ en.titleFarmer=true; addHistory('special','🌾 '+name+' jadi PETANI HANDAL!'); }
+    return;
+  }
+  // 3. BERTERNAK 12%
+  if(r<0.48){
+    civStats.ranch++;
+    let animal=['sapi','kambing','ayam','domba','babi','kuda'][Math.floor(Math.random()*6)];
+    let animalRace={sapi:'cow',kambing:'goat',ayam:'chicken',domba:'sheep',babi:'pig',kuda:'horse'}[animal];
+    if(Math.random()<0.4 && animalRace && RACES[animalRace]){
+      let p=getSpawnPos(animalRace); spawn(animalRace,p.x,p.y);
+      stats.totalBorn++; stats.totalAnimalsBorn++;
+      addHistory('farm','🐄 '+name+' ('+raceLabel+') BERTERNAK '+animal+'! '+animal+'-nya beranak 1 ekor! Sekarang total '+animal+' jadi '+countRace(animalRace)+' ekor! 🐄');
+    } else {
+      addHistory('farm','🐄 '+name+' ('+raceLabel+') BERTERNAK '+animal+'! Ngasih makan '+animal+'-nya! 🐄');
+    }
+    return;
+  }
+  // 4. MENJINAKKAN HEWAN 10%
+  if(r<0.58){
+    civStats.tame++;
+    let wild=['serigala','kuda liar','elang','harimau','beruang','rusa'][Math.floor(Math.random()*6)];
+    let wildRace={serigala:'wolf', 'kuda liar':'horse', elang:'eagle', harimau:'tiger', beruang:'bear', rusa:'deer'}[wild];
+    if(Math.random()<0.6){
+      tamedAnimals.push({owner:name, animal:wild, day:day});
+      en.tamed=(en.tamed||[]);
+      en.tamed.push(wild);
+      addHistory('special','🐕 '+name+' ('+raceLabel+') MENJINAKKAN '+wild+'! '+wild+' sekarang jadi peliharaan '+name+'! 🐕');
+    } else {
+      addHistory('special','🐕 '+name+' ('+raceLabel+') GAGAL menjinakkan '+wild+'! '+wild+'-nya kabur! 😅');
+    }
+    return;
+  }
+  // 5. MEMBUAT RUMAH 8%
+  if(r<0.66){
+    civStats.house++;
+    buildHouse(en.race, en.x+20, en.y+20);
+    addHistory('civ','🏡 '+name+' ('+raceLabel+') MEMBUAT RUMAH '+en.race+'! Rumah baru dibangun di pulau! Total rumah: '+stats.totalHouses+' buah! 🏡');
+    return;
+  }
+  // 6. MENDIRIKAN KLAN 6%
+  if(r<0.72){
+    civStats.clan++;
+    let clanNames=['Bulan','Bintang','Matahari','Hutan','Laut','Gunung','Api','Angin','Petir','Bunga'];
+    let cn=clanNames[Math.floor(Math.random()*clanNames.length)]+' '+Math.floor(Math.random()*99);
+    clansFounded.push({name:cn, founder:name, race:raceLabel, day:day});
+    en.foundedClan=cn;
+    addHistory('civ','👥 '+name+' ('+raceLabel+') MENDIRIKAN KLAN BARU! Klan '+cn+' didirikan! Anggota awal: '+name+'! 👥');
+    return;
+  }
+  // 7. KELUARGA BANGSAWAN 5%
+  if(r<0.77){
+    civStats.noble++;
+    let fam=name+'-'+en.clan;
+    nobleFamilies.push({name:fam, founder:name, race:raceLabel, day:day});
+    addHistory('civ','💎 '+name+' ('+raceLabel+' Clan '+en.clan+') MENDIRIKAN KELUARGA BANGSAWAN! Dinasti '+fam+' didirikan! Keluarga bangsawan pertama dari Clan '+en.clan+'! 💎');
+    return;
+  }
+  // 8. MENDIRIKAN DESA 5%
+  if(r<0.82){
+    civStats.village++;
+    let vName=name+'ville';
+    if(villages.find(v=>v.name==vName)) vName=name+' Town';
+    villages.push({name:vName, founder:name, race:raceLabel, day:day, pop:entities.length});
+    addHistory('civ','🏘️ '+name+' ('+raceLabel+') MENDIRIKAN DESA! Desa '+vName+' didirikan! Desa ke-'+villages.length+' di dunia! Penduduk awal: '+entities.length+' makhluk! 🏘️');
+    return;
+  }
+  // 9. DESA -> KOTA 4%
+  if(r<0.86){
+    if(villages.length){
+      let v=villages[Math.floor(Math.random()*villages.length)];
+      if(!cities.find(c=>c.from==v.name)){
+        let cName=v.name.replace('ville',' City');
+        cities.push({name:cName, from:v.name, founder:name, day:day});
+        civStats.city++;
+        addHistory('civ','🏙️ DESA '+v.name+' NAIK JADI KOTA! '+name+' ('+raceLabel+') memimpin pembangunan! Kota '+cName+' didirikan! Kota ke-'+cities.length+'! 🏙️');
+      } else {
+        addHistory('civ','🏙️ '+name+' membangun jalan dan pasar di Kota '+cities[0].name+'! Kota makin ramai! 🏙️');
+      }
+    } else {
+      addHistory('civ','🏙️ '+name+' bermimpi mendirikan kota! Tapi belum ada desa! Dirikan desa dulu! 🏙️');
+    }
+    return;
+  }
+  // 10. MENDIRIKAN KERAJAAN 4%
+  if(r<0.90){
+    if(cities.length || villages.length){
+      let kName='Kerajaan '+raceLabel+'ia';
+      if(kingdoms.find(k=>k.name==kName)) kName='Kerajaan '+name;
+      kingdoms.push({name:kName, founder:name, race:raceLabel, day:day});
+      civStats.kingdom++;
+      addHistory('civ','🏰 '+name+' ('+raceLabel+') MEMPROKLAMASIKAN KERAJAAN! '+kName+' didirikan! Kerajaan ke-'+kingdoms.length+' di dunia! '+name+' jadi Raja/Ratu pertama '+kName+'! 🏰');
+    } else {
+      addHistory('civ','🏰 '+name+' ingin mendirikan kerajaan! Tapi belum ada desa/kota! 🏰');
+    }
+    return;
+  }
+  // 11. SEKTE BUDAYA 5%
+  if(r<0.95){
+    civStats.sect++;
+    let sectNames=['Sekte Cahaya','Sekte Ular Suci','Sekte Alam','Sekte Bulan','Sekte Matahari','Sekte Laut','Sekte Api Abadi','Sekte Bunga','Sekte Bayangan','Sekte Musik'];
+    let sName=sectNames[Math.floor(Math.random()*sectNames.length)];
+    sects.push({name:sName, leader:name, race:raceLabel, day:day});
+    addHistory('sect','🕯️ '+name+' ('+raceLabel+') MEMPROKLAMASIKAN DIRI SEBAGAI KETUA SEKTE! '+name+' jadi Ketua '+sName+'! Sekte ke-'+sects.length+'! Pengikut: '+Math.floor(Math.random()*20+5)+' orang! 🕯️');
+    return;
+  }
+  // 12. PROFESI LAIN 5%
+  let jobs=[
+    ['🎨 Penyair', 'membuat puisi tentang dunia!'],
+    ['💃 Penari', 'menari di alun-alun desa!'],
+    ['🔨 Pandai Besi', 'membuat pedang baru!'],
+    ['🧙 Dukun', 'meramal masa depan dunia!'],
+    ['🛶 Nelayan', 'menangkap 5 ikan!'],
+    ['🗺️ Penjelajah', 'menjelajahi pulau baru!'],
+    ['📚 Guru', 'mengajar anak-anak membaca!'],
+    ['🎵 Musisi', 'bermain musik untuk warga!'],
+    ['🛍️ Pedagang', 'berdagang di pasar!'],
+    ['🏗️ Tukang Bangunan', 'membangun jembatan!']
+  ];
+  let j=jobs[Math.floor(Math.random()*jobs.length)];
+  civStats.craft++;
+  addHistory('special',j[0]+' '+name+' ('+raceLabel+') jadi '+j[0]+'! '+name+' '+j[1]);
+}
+function openCiv(){
+  document.getElementById('civPanel').style.display='flex';
+  document.getElementById('civSummary').innerText='Desa: '+villages.length+' | Kota: '+cities.length+' | Kerajaan: '+kingdoms.length+' | Sekte: '+sects.length+' | Klan: '+clansFounded.length+' | Bangsawan: '+nobleFamilies.length;
+  let h='';
+  h+='<div class="statSection">🏘️ DESA ('+villages.length+')</div>';
+  if(!villages.length) h+='<div class="statRow zero"><span>Belum ada desa</span><b>0 desa</b></div>';
+  villages.forEach(v=>{ h+='<div class="statRow"><span>🏘️ '+v.name+'</span><b>Pendiri: '+v.founder+' ('+v.race+') | Hari ke-'+v.day+'</b></div>'; });
+  h+='<div class="statSection">🏙️ KOTA ('+cities.length+')</div>';
+  if(!cities.length) h+='<div class="statRow zero"><span>Belum ada kota</span><b>0 kota</b></div>';
+  cities.forEach(c=>{ h+='<div class="statRow"><span>🏙️ '+c.name+'</span><b>Dari Desa '+c.from+' | Pendiri: '+c.founder+' | Hari ke-'+c.day+'</b></div>'; });
+  h+='<div class="statSection">🏰 KERAJAAN ('+kingdoms.length+')</div>';
+  if(!kingdoms.length) h+='<div class="statRow zero"><span>Belum ada kerajaan</span><b>0 kerajaan</b></div>';
+  kingdoms.forEach(k=>{ h+='<div class="statRow" style="border:2px solid gold"><span>🏰 '+k.name+'</span><b>Raja/Ratu Pertama: '+k.founder+' ('+k.race+') | Hari ke-'+k.day+'</b></div>'; });
+  h+='<div class="statSection">🕯️ SEKTE BUDAYA ('+sects.length+')</div>';
+  if(!sects.length) h+='<div class="statRow zero"><span>Belum ada sekte</span><b>0 sekte</b></div>';
+  sects.forEach(s=>{ h+='<div class="statRow" style="border:2px solid #9c27b0"><span>🕯️ '+s.name+'</span><b>Ketua: '+s.leader+' ('+s.race+') | Hari ke-'+s.day+'</b></div>'; });
+  h+='<div class="statSection">👥 KLAN ('+clansFounded.length+')</div>';
+  if(!clansFounded.length) h+='<div class="statRow zero"><span>Belum ada klan baru</span><b>0 klan</b></div>';
+  clansFounded.forEach(c=>{ h+='<div class="statRow"><span>👥 Klan '+c.name+'</span><b>Pendiri: '+c.founder+' | Hari ke-'+c.day+'</b></div>'; });
+  h+='<div class="statSection">💎 KELUARGA BANGSAWAN ('+nobleFamilies.length+')</div>';
+  if(!nobleFamilies.length) h+='<div class="statRow zero"><span>Belum ada keluarga bangsawan</span><b>0 keluarga</b></div>';
+  nobleFamilies.forEach(f=>{ h+='<div class="statRow"><span>💎 Dinasti '+f.name+'</span><b>Pendiri: '+f.founder+' | Hari ke-'+f.day+'</b></div>'; });
+  h+='<div class="statSection">🐕 HEWAN JINAK ('+tamedAnimals.length+')</div>';
+  if(!tamedAnimals.length) h+='<div class="statRow zero"><span>Belum ada hewan jinak</span><b>0 ekor</b></div>';
+  tamedAnimals.forEach(t=>{ h+='<div class="statRow"><span>🐕 '+t.animal+' milik '+t.owner+'</span><b>Hari ke-'+t.day+'</b></div>'; });
+  h+='<div class="statSection">📊 STATISTIK AKTIVITAS</div>';
+  h+='<div class="statRow"><span>🏹 Total Berburu</span><b>'+civStats.hunt+' kali</b></div>';
+  h+='<div class="statRow"><span>🌾 Total Berkebun</span><b>'+civStats.farm+' kali</b></div>';
+  h+='<div class="statRow"><span>🐄 Total Beternak</span><b>'+civStats.ranch+' kali</b></div>';
+  h+='<div class="statRow"><span>🐕 Total Jinakin Hewan</span><b>'+civStats.tame+' kali</b></div>';
+  h+='<div class="statRow"><span>🏡 Total Bikin Rumah</span><b>'+civStats.house+' buah</b></div>';
+  h+='<div class="statRow"><span>👥 Total Dirikan Klan</span><b>'+civStats.clan+' klan</b></div>';
+  h+='<div class="statRow"><span>💎 Total Keluarga Bangsawan</span><b>'+civStats.noble+' keluarga</b></div>';
+  h+='<div class="statRow"><span>🏘️ Total Desa</span><b>'+civStats.village+' desa</b></div>';
+  h+='<div class="statRow"><span>🏙️ Total Kota</span><b>'+civStats.city+' kota</b></div>';
+  h+='<div class="statRow"><span>🏰 Total Kerajaan</span><b>'+civStats.kingdom+' kerajaan</b></div>';
+  h+='<div class="statRow"><span>🕯️ Total Sekte</span><b>'+civStats.sect+' sekte</b></div>';
+  document.getElementById('civList').innerHTML=h;
+}
+function closeCiv(){ document.getElementById('civPanel').style.display='none'; }
 function skipOneMonth(){
   let beforeDay=day; let beforeStr=getWorldDateStr();
   day+=30;
@@ -156,8 +374,10 @@ function skipOneMonth(){
       en.el.remove(); entities=entities.filter(e=>e!==en); stats.totalDied++;
     }
   });
+  // Skip 1 bulan juga trigger 5x aktivitas peradaban!
+  for(let i=0;i<5;i++) doLifeEvent();
   let afterStr=getWorldDateStr();
-  addHistory('special','⏩ SKIP 1 BULAN! Dewa skip waktu 30 hari! Dari '+beforeStr+' -> '+afterStr+'! '+(died.length? died.length+' makhluk meninggal tua karena menua 30 hari.':'Gak ada yang meninggal!'));
+  addHistory('special','⏩ SKIP 1 BULAN! Dewa skip waktu 30 hari! Dari '+beforeStr+' -> '+afterStr+'! '+(died.length? died.length+' makhluk meninggal tua karena menua 30 hari.':'Gak ada yang meninggal!')+' Selama 1 bulan, warga sempat berburu, berkebun, beternak, dll!');
   updateCalendar(); updateLeaders(); updateClanBar(); updateFavCount();
   log('⏩ SKIP 1 BULAN! '+beforeStr+' -> '+afterStr+'! '+(died.length? died.length+' meninggal tua.':''));
   if(document.getElementById('statsPanel').style.display=='flex') renderStatsList();
@@ -200,7 +420,7 @@ function applyAnimalVisibility(en){ if(isAnimal(en.race)){ en.el.style.display=s
 function openSummon(){ document.getElementById('summonPanel').style.display='flex'; renderSummon(); }
 function closeSummon(){ document.getElementById('summonPanel').style.display='none'; }
 function clearBrush(){ tool='none'; closeSummon(); }
-function resetWorld(){ if(!confirm('RESET WORLD v22.0? Balik ke 1 Januari Tahun 1?')) return; entities.forEach(e=>e.el.remove()); houses.forEach(h=>h.el.remove()); entities=[]; houses=[]; history=[]; favorites=[]; usedNames={}; nextEntId=1; day=1; worldStartTime=Date.now(); tool='none'; stats={totalBorn:0,totalDied:0,totalKilled:0,totalHybrid:0,totalHouses:0,totalPregnant:0,totalDoom:0,totalMagic:0,totalQueens:0,totalAnimalsBorn:0}; try{ localStorage.removeItem('worldbox_kw_save_v17'); }catch(e){} closeSummon(); closeStats(); closeChrono(); closeMap(); closeFav(); resize(); createIslands(); ['human','elf','mermaid','goblin','centaur','lamia'].forEach(r=>{ for(let i=0;i<2;i++){ let p=getSpawnPos(r); spawn(r,p.x,p.y); } }); ['butterfly','bee','ant','rabbit','chicken','sheep','cow','dog'].forEach(r=>{ let p=getSpawnPos(r); spawn(r,p.x,p.y); }); addHistory('special','🌍 DUNIA BARU DIBUAT! 1 Januari Tahun 1! Umur + Hamil = rata-rata ortu!'); updateClanBar(); updateCalendar(); updateFavCount(); updateLeaders(true); }
+function resetWorld(){ if(!confirm('RESET WORLD v22.3? Balik ke 1 Januari Tahun 1?')) return; entities.forEach(e=>e.el.remove()); houses.forEach(h=>h.el.remove()); entities=[]; houses=[]; history=[]; favorites=[]; usedNames={}; nextEntId=1; day=1; worldStartTime=Date.now(); tool='none'; villages=[]; cities=[]; kingdoms=[]; sects=[]; nobleFamilies=[]; clansFounded=[]; tamedAnimals=[]; civStats={hunt:0,farm:0,ranch:0,tame:0,house:0,clan:0,noble:0,village:0,city:0,kingdom:0,sect:0,craft:0,trade:0}; stats={totalBorn:0,totalDied:0,totalKilled:0,totalHybrid:0,totalHouses:0,totalPregnant:0,totalDoom:0,totalMagic:0,totalQueens:0,totalAnimalsBorn:0}; try{ localStorage.removeItem('worldbox_kw_save_v17'); }catch(e){} closeSummon(); closeStats(); closeChrono(); closeMap(); closeFav(); closeCiv(); resize(); createIslands(); ['human','elf','mermaid','goblin','centaur','lamia'].forEach(r=>{ for(let i=0;i<2;i++){ let p=getSpawnPos(r); spawn(r,p.x,p.y); } }); ['butterfly','bee','ant','rabbit','chicken','sheep','cow','dog'].forEach(r=>{ let p=getSpawnPos(r); spawn(r,p.x,p.y); }); addHistory('special','🌍 DUNIA BARU DIBUAT! 1 Januari Tahun 1! Dunia mulai hidup, warga akan berburu, berkebun, dirikan desa, dll!'); updateClanBar(); updateCalendar(); updateFavCount(); updateLeaders(true); }
 function summonOne(race){ tool='none'; let p=getSpawnPos(race); let e=spawn(race,p.x,p.y); if(e){ addHistory('special','✨ Summon '+getEntNameNoTitle(e)+' ('+race+') oleh Dewa!'); } closeSummon(); }
 function summonClass(cls, element){ let race=cls=='mage'?'elf':(cls=='swordsman'?'human':'centaur'); let p=getSpawnPos(race); let e=spawn(race,p.x,p.y); e.cls=cls; e.element=element||null; refreshEntityLabel(e); addHistory('special','✨ Summon '+getEntNameNoTitle(e)+' jadi '+cls+'!'); closeSummon(); }
 function summonHouse(race){ let p=getSpawnPos('human'); buildHouse(race,p.x,p.y); closeSummon(); }
@@ -221,20 +441,100 @@ function saveGame(){ try{ localStorage.setItem('worldbox_kw_save_v17', JSON.stri
 function loadGame(){ try{ let raw=localStorage.getItem('worldbox_kw_save_v17'); if(!raw) return false; let d=JSON.parse(raw); if(d.history) history=d.history; if(d.stats) stats=d.stats; if(d.day) day=d.day; return true; }catch(e){ return false; } }
 function setStatsFilter(f){ statsFilter=f; document.getElementById('btnStatAll').style.background=f=='all'?'#ff9800':'#333'; document.getElementById('btnStatAlive').style.background=f=='alive'?'#00c853':'#333'; document.getElementById('btnStatDead').style.background=f=='dead'?'#e74c3c':'#333'; renderStatsList(); }
 function getLeaderOf(race){ return entities.find(e=>e.race==race && e.isLeader); }
-function renderStatsList(){ let h=''; let totalRace=['human','elf','mermaid','goblin','centaur','lamia'].reduce((a,r)=>a+countRace(r),0); let totalAnimal=countAnimals(); let totalHybrid=entities.filter(e=>e.race=='hybrid').length; h+='<div class="statTotal">🌍 TOTAL: '+(totalRace+totalAnimal+totalHybrid)+' | 🧬 Race: '+totalRace+' orang | 🐾 Hewan: '+totalAnimal+' ekor | ✨ Hybrid: '+totalHybrid+' orang</div>'; h+='<div class="statSection">🧬 RAS MURNI - Umur + Hamil Ngikutin Dia Sendiri!</div>'; h+='<div class="statRow"><span>🧍 Human / 🧌 Goblin / 🐍 Lamia</span><b>Umur 80 thn (29200 hari) | Hamil 9 bln (270 hari)</b></div>'; h+='<div class="statRow"><span>🧝 Elf / 🧜 Mermaid</span><b>Umur 130 thn (47450 hari) | Hamil 12 bln (360 hari)</b></div>'; h+='<div class="statRow"><span>🐎 Centaur</span><b>Umur 130 thn (47450 hari) | Hamil 11 bln (330 hari)</b></div>'; h+='<div class="statSection">✨ HYBRID - Umur + Hamil = Rata-rata Kedua Ortu! Rumus Sama!</div>'; h+='<div class="statRow"><span>🧍 Human x 🧝 Elf = Elfan</span><b>Umur (80+130)/2=105 thn | Hamil (9+12)/2=10.5 bln</b></div>'; h+='<div class="statRow"><span>🧍 Human x 🧜 Mermaid = Merhuman</span><b>Umur 105 thn | Hamil 10.5 bln</b></div>'; h+='<div class="statRow"><span>🧍 Human x 🧌 Goblin = Hoblin</span><b>Umur 80 thn | Hamil 9 bln</b></div>'; h+='<div class="statRow"><span>🧍 Human x 🐎 Centaur = Humantaur</span><b>Umur 105 thn | Hamil 10 bln</b></div>'; h+='<div class="statRow"><span>🧍 Human x 🐍 Lamia = Lamian</span><b>Umur 80 thn | Hamil 9 bln</b></div>'; h+='<div class="statRow"><span>🧝 Elf x 🧜 Mermaid = Aquelf</span><b>Umur 130 thn | Hamil 12 bln</b></div>'; h+='<div class="statRow"><span>🧝 Elf x 🧌 Goblin = Darkelf</span><b>Umur 105 thn | Hamil 10.5 bln</b></div>'; h+='<div class="statRow"><span>🧝 Elf x 🐎 Centaur = Elftaur</span><b>Umur 130 thn | Hamil 11.5 bln</b></div>'; h+='<div class="statRow"><span>🧝 Elf x 🐍 Lamia = Lamiel</span><b>Umur 105 thn | Hamil 10.5 bln</b></div>'; h+='<div class="statRow"><span>🧜 Mermaid x 🧌 Goblin = Mergoblin</span><b>Umur 105 thn | Hamil 10.5 bln</b></div>'; h+='<div class="statRow"><span>🧜 Mermaid x 🐎 Centaur = Hippocamp</span><b>Umur 130 thn | Hamil 11.5 bln</b></div>'; h+='<div class="statRow"><span>🧜 Mermaid x 🐍 Lamia = Sealamia</span><b>Umur 105 thn | Hamil 10.5 bln</b></div>'; h+='<div class="statRow"><span>🧌 Goblin x 🐎 Centaur = Gobtaur</span><b>Umur 105 thn | Hamil 10 bln</b></div>'; h+='<div class="statRow"><span>🧌 Goblin x 🐍 Lamia = Goblamia</span><b>Umur 80 thn | Hamil 9 bln</b></div>'; h+='<div class="statRow"><span>🐎 Centaur x 🐍 Lamia = Lamitaur</span><b>Umur 105 thn | Hamil 10 bln</b></div>'; let hybs=entities.filter(e=>e.race=='hybrid'); if(hybs.length){ h+='<div class="statSection">✨ HYBRID YANG HIDUP - Umur + Hamil dari Kedua Ortunya!</div>'; hybs.forEach(en=>{ h+='<div class="statRow" style="border:2px solid #ff00ff"><span>'+en.hybridData.emoji+' '+getEntNameNoTitle(en)+' - '+en.hybridData.hybridName+'</span><b>Umur: ('+formatAge(en.hybridData.parentAgeA)+' + '+formatAge(en.hybridData.parentAgeB)+')/2 = '+formatAge(en.hybridData.maxAge)+' | Hamil: '+formatMonths(en.hybridData.pregnancy)+'</b></div>'; }); } h+='<div class="statSection">🤰 YANG LAGI HAMIL</div>'; h+='<div class="statRow" style="border:2px solid #ff69b4"><span>🤰 Total Hamil</span><b>'+entities.filter(e=>e.pregnant).length+' orang</b></div>'; entities.filter(e=>e.pregnant).forEach(en=>{ h+='<div class="statRow"><span>🤰 '+getEntNameNoTitle(en)+' ('+(en.isHybrid?en.hybridData.hybridName:en.race)+')</span><b>'+formatPregnancy(en)+'</b></div>'; }); h+='<div class="statSection">👑 RAJA / RATU</div>'; ['human','elf','mermaid','goblin','centaur','lamia'].forEach(r=>{ let lead=getLeaderOf(r); let info=RACES[r]; let icon=r=='centaur'?'<img src="centaur.png" style="width:18px;height:24px;object-fit:contain;vertical-align:middle">':info.emoji; if(lead){ h+='<div class="statRow" style="border:2px solid gold"><span>'+icon+' '+info.name+' - '+(lead.gender=='male'?'👑 RAJA':'👸 RATU')+' '+getEntNameNoTitle(lead)+'</span><b>Umur '+lead.age+' hari | Clan '+lead.clan+'</b></div>'; } else { h+='<div class="statRow zero"><span>'+icon+' '+info.name+'</span><b>💀 PUNAH - 0 orang</b></div>'; } }); h+='<div class="statSection">🧬 RACE CERDAS - Hitungan ORANG!</div>'; ['human','elf','mermaid','goblin','centaur','lamia'].forEach(r=>{ let list=entities.filter(e=>e.race==r); let c=list.length; if(statsFilter=='alive'&&c==0) return; if(statsFilter=='dead'&&c>0) return; let info=RACES[r]; let icon=r=='centaur'?'<img src="centaur.png" style="width:18px;height:24px;object-fit:contain;vertical-align:middle">':info.emoji; h+='<div class="statRow '+(c==0?'zero':'')+'"><span>'+icon+' '+info.name+' ('+countLabel(r,c)+')</span><b>'+(c==0?'💀 PUNAH - 0 orang':list.map(e=>getEntNameNoTitle(e)+(e.isLeader?' 👑':'')+(e.pregnant?' 🤰':'')).join(', '))+'</b></div>'; }); if(!(statsFilter=='alive'&&totalHybrid==0)&&!(statsFilter=='dead'&&totalHybrid>0)) h+='<div class="statRow '+(totalHybrid==0?'zero':'')+'"><span>✨ Hybrid</span><b>'+(totalHybrid==0?'💀 PUNAH - 0 orang':countLabel('hybrid',totalHybrid))+'</b></div>'; h+='<div class="statSection">🐾 ANIMALS - Hitungan EKOR!</div>'; ANIMALS.forEach(a=>{ let c=countRace(a); if(statsFilter=='alive'&&c==0) return; if(statsFilter=='dead'&&c>0) return; let info=RACES[a]; h+='<div class="statRow '+(c==0?'zero':'')+'"><span>'+info.emoji+' '+info.name+'</span><b>'+(c==0?'💀 PUNAH - 0 ekor':countLabel(a,c))+'</b></div>'; }); h+='<div class="statSection">📈 TOTAL SEJARAH</div>'; h+='<div class="statRow"><span>👶 Total Lahir</span><b>'+stats.totalBorn+' orang / ekor</b></div>'; h+='<div class="statRow"><span>💀 Total Meninggal Tua</span><b>'+stats.totalDied+' orang / ekor</b></div>'; h+='<div class="statRow"><span>⚔️ Total Kena Doom</span><b>'+stats.totalKilled+' orang / ekor</b></div>'; h+='<div class="statRow"><span>✨ Total Hybrid</span><b>'+stats.totalHybrid+' orang</b></div>'; h+='<div class="statRow"><span>🤰 Total Hamil</span><b>'+stats.totalPregnant+' orang</b></div>'; h+='<div class="statRow"><span>🏡 Total Rumah</span><b>'+stats.totalHouses+' buah</b></div>'; h+='<div class="statRow"><span>👑 Total Raja/Ratu Pernah Ada</span><b>'+stats.totalQueens+' orang</b></div>'; document.getElementById('statsContent').innerHTML=h; }
-function openStats(){ document.getElementById('statsPanel').style.display='flex'; let wd=getWorldDate(); document.getElementById('statsSummary').innerText='Hari ke-'+day+' | '+HARI[wd.getDay()]+', '+wd.getDate()+' '+BULAN[wd.getMonth()]+' Tahun '+wd.getFullYear(); updateCalendar(); setStatsFilter(statsFilter); }
+function getPopulationData(){
+  let smart=['human','elf','mermaid','goblin','centaur','lamia'];
+  let data={total:entities.length, smartTotal:0, animalTotal:0, hybridTotal:0, smart:{}, animals:{}, hybrids:{}, classes:{mage:0,swordsman:0,archer:0}, pregnant:0, male:0, female:0};
+  smart.forEach(r=>{ let list=entities.filter(e=>e.race==r); data.smart[r]=list; data.smartTotal+=list.length; data.male+=list.filter(e=>e.gender=='male').length; data.female+=list.filter(e=>e.gender=='female').length; });
+  ANIMALS.forEach(a=>{ let list=entities.filter(e=>e.race==a); data.animals[a]=list; data.animalTotal+=list.length; });
+  let hybs=entities.filter(e=>e.race=='hybrid');
+  data.hybridTotal=hybs.length;
+  hybs.forEach(h=>{ let n=h.hybridData.hybridName; if(!data.hybrids[n]) data.hybrids[n]=[]; data.hybrids[n].push(h); });
+  entities.forEach(e=>{ if(e.cls=='mage') data.classes.mage++; if(e.cls=='swordsman') data.classes.swordsman++; if(e.cls=='archer') data.classes.archer++; if(e.pregnant) data.pregnant++; });
+  return data;
+}
+function renderStatsList(){
+  let d=getPopulationData();
+  let h='';
+  h+='<div class="statTotal">🌍 POPULASI TOTAL MAKHLUK HIDUP: '+d.total+' makhluk<br>🧬 Ras Cerdas: '+d.smartTotal+' orang | ✨ Hybrid: '+d.hybridTotal+' orang | 🐾 Hewan: '+d.animalTotal+' ekor<br>👦 Laki-laki: '+d.male+' orang | 👧 Perempuan: '+d.female+' orang | 🤰 Hamil: '+d.pregnant+' orang<br>🏘️ Desa: '+villages.length+' | 🏙️ Kota: '+cities.length+' | 🏰 Kerajaan: '+kingdoms.length+' | 🕯️ Sekte: '+sects.length+' | 👥 Klan: '+clansFounded.length+'</div>';
+  h+='<div class="statSection">🏘️ PERADABAN</div>';
+  h+='<div class="popCard"><span>🏘️ Desa</span><b>'+villages.length+' desa - '+(villages.map(v=>v.name).join(', ')||'Belum ada')+'</b></div>';
+  h+='<div class="popCard"><span>🏙️ Kota</span><b>'+cities.length+' kota - '+(cities.map(c=>c.name).join(', ')||'Belum ada')+'</b></div>';
+  h+='<div class="popCard"><span>🏰 Kerajaan</span><b>'+kingdoms.length+' kerajaan - '+(kingdoms.map(k=>k.name).join(', ')||'Belum ada')+'</b></div>';
+  h+='<div class="popCard"><span>🕯️ Sekte Budaya</span><b>'+sects.length+' sekte - '+(sects.map(s=>s.name+' (Ketua: '+s.leader+')').join(', ')||'Belum ada')+'</b></div>';
+  h+='<div class="popCard"><span>💎 Keluarga Bangsawan</span><b>'+nobleFamilies.length+' keluarga</b></div>';
+  h+='<div class="popCard"><span>🏹 Berburu / 🌾 Berkebun / 🐄 Beternak</span><b>'+civStats.hunt+' / '+civStats.farm+' / '+civStats.ranch+' kali</b></div>';
+  h+='<div class="statSection">🧬 POPULASI RAS CERDAS - Semua yang Hidup! (ORANG)</div>';
+  ['human','elf','mermaid','goblin','centaur','lamia'].forEach(r=>{
+    let list=d.smart[r]; let c=list.length;
+    if(statsFilter=='alive'&&c==0) return;
+    if(statsFilter=='dead'&&c>0) return;
+    let info=RACES[r];
+    let male=list.filter(e=>e.gender=='male').length, female=list.filter(e=>e.gender=='female').length;
+    let preg=list.filter(e=>e.pregnant).length;
+    h+='<div class="popCard '+(c==0?'zero':'')+'"><span>'+raceIcon(r)+' <b>'+info.name+'</b><br><span style="font-size:11px;color:#aaa">'+(c? list.map(e=>getEntNameNoTitle(e)+(e.isLeader?' 👑':'')+(e.pregnant?' 🤰':'')).join(', ') : 'Belum ada')+'</span></span><b style="text-align:right">'+(c==0?'💀 PUNAH<br>0 orang':c+' orang<br><span style="font-size:11px;font-weight:normal">👦 '+male+' | 👧 '+female+(preg?' | 🤰 '+preg:'')+'</span>')+'</b></div>';
+  });
+  h+='<div class="statSection">✨ POPULASI HYBRID - Per Jenis! (ORANG)</div>';
+  let allHybNames=['Elfan','Merhuman','Hoblin','Humantaur','Lamian','Aquelf','Darkelf','Elftaur','Lamiel','Mergoblin','Hippocamp','Sealamia','Gobtaur','Goblamia','Lamitaur'];
+  allHybNames.forEach(n=>{
+    let list=d.hybrids[n]||[];
+    let c=list.length;
+    if(statsFilter=='alive'&&c==0) return;
+    if(statsFilter=='dead'&&c>0) return;
+    h+='<div class="popCard '+(c==0?'zero':'')+'"><span>✨ <b>'+n+'</b><br><span style="font-size:11px;color:#aaa">'+(c? list.map(e=>getEntNameNoTitle(e)).join(', ') : 'Belum ada')+'</span></span><b>'+(c==0?'💀 0 orang':c+' orang')+'</b></div>';
+  });
+  Object.keys(d.hybrids).forEach(n=>{ if(allHybNames.includes(n)) return; let list=d.hybrids[n]; h+='<div class="popCard"><span>✨ <b>'+n+'</b></span><b>'+list.length+' orang</b></div>'; });
+  h+='<div class="statSection">🐾 POPULASI HEWAN - Semua yang Hidup! (EKOR)</div>';
+  ANIMALS.forEach(a=>{
+    let list=d.animals[a]; let c=list.length;
+    if(statsFilter=='alive'&&c==0) return;
+    if(statsFilter=='dead'&&c>0) return;
+    let info=RACES[a];
+    h+='<div class="popCard '+(c==0?'zero':'')+'"><span>'+info.emoji+' <b>'+info.name+'</b></span><b>'+(c==0?'💀 PUNAH - 0 ekor':c+' ekor')+'</b></div>';
+  });
+  h+='<div class="statSection">⚔️ POPULASI PER CLASS</div>';
+  h+='<div class="popCard"><span>🧙 Mage</span><b>'+d.classes.mage+' orang</b></div>';
+  h+='<div class="popCard"><span>⚔️ Swordsman</span><b>'+d.classes.swordsman+' orang</b></div>';
+  h+='<div class="popCard"><span>🏹 Archer</span><b>'+d.classes.archer+' orang</b></div>';
+  h+='<div class="statSection">🤰 POPULASI YANG LAGI HAMIL</div>';
+  h+='<div class="popCard"><span>🤰 Total Hamil</span><b>'+d.pregnant+' orang</b></div>';
+  entities.filter(e=>e.pregnant).forEach(en=>{ h+='<div class="statRow"><span>🤰 '+getEntNameNoTitle(en)+' ('+(en.isHybrid?en.hybridData.hybridName:en.race)+')</span><b>'+formatPregnancy(en)+'</b></div>'; });
+  h+='<div class="statSection">🧬 RAS MURNI - Umur + Hamil</div>';
+  h+='<div class="statRow"><span>'+raceIcon('human')+' Human / '+raceIcon('goblin')+' Goblin / '+raceIcon('lamia')+' Lamia</span><b>Umur 80 thn | Hamil 9 bln</b></div>';
+  h+='<div class="statRow"><span>'+raceIcon('elf')+' Elf / '+raceIcon('mermaid')+' Mermaid</span><b>Umur 130 thn | Hamil 12 bln</b></div>';
+  h+='<div class="statRow"><span>'+raceIcon('centaur')+' Centaur</span><b>Umur 130 thn | Hamil 11 bln</b></div>';
+  h+='<div class="statSection">✨ HYBRID - Umur + Hamil = Rata-rata Ortu!</div>';
+  [['human','elf','Elfan','105 thn','10.5 bln'],['human','mermaid','Merhuman','105 thn','10.5 bln'],['human','goblin','Hoblin','80 thn','9 bln'],['human','centaur','Humantaur','105 thn','10 bln'],['human','lamia','Lamian','80 thn','9 bln'],['elf','mermaid','Aquelf','130 thn','12 bln'],['elf','goblin','Darkelf','105 thn','10.5 bln'],['elf','centaur','Elftaur','130 thn','11.5 bln'],['elf','lamia','Lamiel','105 thn','10.5 bln'],['mermaid','goblin','Mergoblin','105 thn','10.5 bln'],['mermaid','centaur','Hippocamp','130 thn','11.5 bln'],['mermaid','lamia','Sealamia','105 thn','10.5 bln'],['goblin','centaur','Gobtaur','105 thn','10 bln'],['goblin','lamia','Goblamia','80 thn','9 bln'],['centaur','lamia','Lamitaur','105 thn','10 bln']].forEach(([a,b,name,age,preg])=>{
+    h+='<div class="statRow"><span>'+raceIcon(a)+' '+a.charAt(0).toUpperCase()+a.slice(1)+' x '+raceIcon(b)+' '+b.charAt(0).toUpperCase()+b.slice(1)+' = '+name+'</span><b>Umur '+age+' | Hamil '+preg+'</b></div>';
+  });
+  h+='<div class="statSection">👑 RAJA / RATU</div>';
+  ['human','elf','mermaid','goblin','centaur','lamia'].forEach(r=>{
+    let lead=getLeaderOf(r); let info=RACES[r]; let icon=raceIcon(r);
+    if(lead){ h+='<div class="statRow" style="border:2px solid gold"><span>'+icon+' '+info.name+' - '+(lead.gender=='male'?'👑 RAJA':'👸 RATU')+' '+getEntNameNoTitle(lead)+'</span><b>Umur '+lead.age+' hari | Clan '+lead.clan+'</b></div>'; }
+    else { h+='<div class="statRow zero"><span>'+icon+' '+info.name+'</span><b>💀 PUNAH - 0 orang</b></div>'; }
+  });
+  h+='<div class="statSection">📈 TOTAL SEJARAH</div>';
+  h+='<div class="statRow"><span>👶 Total Lahir</span><b>'+stats.totalBorn+' orang / ekor</b></div>';
+  h+='<div class="statRow"><span>💀 Total Meninggal Tua</span><b>'+stats.totalDied+' orang / ekor</b></div>';
+  h+='<div class="statRow"><span>⚔️ Total Kena Doom</span><b>'+stats.totalKilled+' orang / ekor</b></div>';
+  h+='<div class="statRow"><span>✨ Total Hybrid</span><b>'+stats.totalHybrid+' orang</b></div>';
+  h+='<div class="statRow"><span>🤰 Total Hamil</span><b>'+stats.totalPregnant+' orang</b></div>';
+  h+='<div class="statRow"><span>🏡 Total Rumah</span><b>'+stats.totalHouses+' buah</b></div>';
+  h+='<div class="statRow"><span>👑 Total Raja/Ratu</span><b>'+stats.totalQueens+' orang</b></div>';
+  document.getElementById('statsContent').innerHTML=h;
+}
+function openStats(){ document.getElementById('statsPanel').style.display='flex'; updateCalendar(); setStatsFilter(statsFilter); }
 function closeStats(){ document.getElementById('statsPanel').style.display='none'; }
-function addHistory(type,text){ history.push({day,type,text,dateStr:getWorldDateStr(),time:new Date().toLocaleTimeString()}); if(history.length>1000) history=history.slice(-1000); }
-function setChronoFilter(f){ chronoFilter=f; ['All','Birth','Death','Special','Queen'].forEach(k=>{ let el=document.getElementById('btnCh'+k); if(el) el.style.background=(k=='All'&&f=='all')||k.toLowerCase()==f?'#9b59b6':'#333'; }); renderChronoList(); }
-function renderChronoList(){ let list=history.slice().reverse(); if(chronoFilter!='all'){ list=list.filter(h=>{ if(chronoFilter=='birth') return h.type=='birth'; if(chronoFilter=='death') return h.type=='death'||h.type=='killed'; if(chronoFilter=='special') return h.type=='special'; if(chronoFilter=='queen') return h.type=='queen'; return true; }); } if(!list.length){ document.getElementById('chronoList').innerHTML='<div style="text-align:center;color:#aaa;padding:30px">Belum ada kejadian ini.</div>'; return; } document.getElementById('chronoList').innerHTML=list.map(h=>'<div class="chronoItem '+h.type+'"><b>Hari ke-'+h.day+' - '+h.dateStr+'</b><br>'+h.text+'<br><span style="font-size:11px;color:#aaa">'+h.time+'</span></div>').join(''); }
-function openChrono(){ document.getElementById('chronoPanel').style.display='flex'; document.getElementById('chronoSummary').innerText='Total '+history.length+' kejadian | Dari Hari 1 sampe Hari ke-'+day; updateCalendar(); setChronoFilter(chronoFilter); }
+function addHistory(type,text){ history.push({day,type,text,dateStr:getWorldDateStr(),time:new Date().toLocaleTimeString()}); if(history.length>1500) history=history.slice(-1500); }
+function setChronoFilter(f){ chronoFilter=f; ['All','Birth','Death','Hunt','Farm','Civ','Sect','Special','Queen'].forEach(k=>{ let el=document.getElementById('btnCh'+k); if(el) el.style.background=(k=='All'&&f=='all')||k.toLowerCase()==f?'#9b59b6':'#333'; }); renderChronoList(); }
+function renderChronoList(){ let list=history.slice().reverse(); if(chronoFilter!='all'){ list=list.filter(h=>{ if(chronoFilter=='birth') return h.type=='birth'; if(chronoFilter=='death') return h.type=='death'||h.type=='killed'; if(chronoFilter=='hunt') return h.type=='hunt'; if(chronoFilter=='farm') return h.type=='farm'; if(chronoFilter=='civ') return h.type=='civ'; if(chronoFilter=='sect') return h.type=='sect'; if(chronoFilter=='special') return h.type=='special'; if(chronoFilter=='queen') return h.type=='queen'; return true; }); } if(!list.length){ document.getElementById('chronoList').innerHTML='<div style="text-align:center;color:#aaa;padding:30px">Belum ada kejadian ini.<br>Tunggu warga beraktivitas!</div>'; return; } document.getElementById('chronoList').innerHTML=list.map(h=>'<div class="chronoItem '+h.type+'"><b>Hari ke-'+h.day+' - '+h.dateStr+'</b><br>'+h.text+'<br><span style="font-size:11px;color:#aaa">'+h.time+'</span></div>').join(''); }
+function openChrono(){ document.getElementById('chronoPanel').style.display='flex'; document.getElementById('chronoSummary').innerText='Total '+history.length+' kejadian | Desa '+villages.length+' | Kota '+cities.length+' | Kerajaan '+kingdoms.length+' | Sekte '+sects.length; updateCalendar(); setChronoFilter(chronoFilter); }
 function closeChrono(){ document.getElementById('chronoPanel').style.display='none'; }
 function clearChrono(){ if(!confirm('Hapus semua riwayat kronologi?')) return; history=[]; renderChronoList(); document.getElementById('chronoSummary').innerText='Total 0 kejadian'; }
 let SMART_RACES=['human','elf','mermaid','goblin','centaur','lamia'];
 function updateLeaders(isReset){ let barParts=[]; SMART_RACES.forEach(race=>{ let list=entities.filter(e=>e.race==race); if(!list.length){ return; } list.sort((a,b)=>b.age-a.age); let newLeader=list[0]; let oldLeader=entities.find(e=>e.race==race && e.isLeader); if(oldLeader && oldLeader!==newLeader){ oldLeader.isLeader=false; refreshEntityLabel(oldLeader); } if(!newLeader.isLeader){ newLeader.isLeader=true; stats.totalQueens++; if(!isReset && day>2){ addHistory('queen',(newLeader.gender=='male'?'👑 ':'👸 ')+getEntNameNoTitle(newLeader)+' ('+race+' Clan '+newLeader.clan+') jadi '+(newLeader.gender=='male'?'RAJA':'RATU')+' baru '+race+'! Umur '+newLeader.age+' hari!'); } refreshEntityLabel(newLeader); } barParts.push((newLeader.gender=='male'?'👑':'👸')+' '+getEntNameNoTitle(newLeader)+' ('+race+')'); }); let bar=document.getElementById('leaderBar'); if(bar) bar.innerText=barParts.length? barParts.join(' | ') : 'Belum ada pemimpin'; }
 function toggleFavorite(en){ if(!en) return; if(en.isFav){ en.isFav=false; favorites=favorites.filter(f=>f.id!==en.id); addHistory('special','💔 '+getEntNameNoTitle(en)+' dihapus dari favorit!'); log('💔 '+getEntNameNoTitle(en)+' bukan favorit lagi'); } else { en.isFav=true; let nm=prompt('Kasih nama panggilan buat favorit ini? (kosongin = pake nama asli: '+getEntNameNoTitle(en)+')', getEntNameNoTitle(en)); if(nm!==null && nm.trim()!='' && nm.trim()!=getEntNameNoTitle(en)) en.customName=nm.trim(); favorites.push(en); addHistory('special','⭐ '+getEntNameNoTitle(en)+' ('+en.race+') ditandai jadi FAVORIT!'); log('⭐ '+getEntNameNoTitle(en)+' jadi FAVORIT!'); } refreshEntityLabel(en); updateFavCount(); }
 function updateFavCount(){ let el=document.getElementById('favCount'); if(el) el.innerText=favorites.length; let s=document.getElementById('favSummary'); if(s) s.innerText=favorites.length?favorites.length+' karakter favorit dipantau | '+favorites.filter(f=>entities.includes(f)).length+' masih hidup, '+favorites.filter(f=>!entities.includes(f)).length+' udah meninggal':'Belum ada favorit. Pencet karakter di pulau buat nandain!'; }
-function renderFavList(){ if(!favorites.length){ document.getElementById('favList').innerHTML='<div style="text-align:center;color:#aaa;padding:30px">⭐ Belum ada favorit!<br><br>Pencet karakter di pulau<br>yang lo suka!</div>'; return; } document.getElementById('favList').innerHTML=favorites.slice().reverse().map(f=>{ let alive=entities.includes(f); let info=f.isHybrid?f.hybridData:RACES[f.race]; let icon=f.race=='centaur'?'<img src="centaur.png" style="width:30px;height:40px;object-fit:contain">':(info?info.emoji:'❓'); let pregHtml=''; let genHtml=''; if(f.isHybrid){ genHtml='<br>🧬 Hybrid: <b>'+info.hybridName+'</b> | DNA: Ibu '+info.motherRace+' + Bapak '+info.fatherRace+'<br>⏳ Umur Max: ('+formatAge(info.parentAgeA)+' + '+formatAge(info.parentAgeB)+') / 2 = <b>'+formatAge(info.maxAge)+'</b><br>🤰 Hamil: ('+formatMonths(info.parentPregA)+' + '+formatMonths(info.parentPregB)+') / 2 = <b>'+formatMonths(info.pregnancy||270)+'</b> - Rumus sama!'; } else { genHtml='<br>⏳ Umur Max: <b>'+formatAge(getMaxAgeForEntity(f))+'</b> (Ngikutin dia sendiri!) | 🤰 Hamil: <b>'+formatMonths(getPregnancyForEntity(f))+'</b>'; } if(alive && f.pregnant){ let total=f.pregnancyTotal||getPregnancyForEntity(f); let pct=Math.min(100,Math.floor(f.pregnantDays/total*100)); pregHtml='<div style="margin-top:6px"><b>'+formatPregnancy(f)+'</b><div class="pregBar"><div class="pregFill" style="width:'+pct+'%"></div></div></div>'; } return '<div class="favCard '+(alive?'':'dead')+'"><div style="display:flex;gap:10px;align-items:center"><div style="font-size:32px">'+icon+'</div><div style="flex:1"><b>⭐ '+getEntName(f)+'</b><br>Nama Asli: '+getEntNameNoTitle(f)+' | '+(f.isHybrid?info.hybridName:(info?info.name:f.race))+' | '+(f.gender=='male'?'👦 Laki-laki':'👧 Perempuan')+' | Clan '+f.clan+genHtml+'<br>'+(alive?'🟢 HIDUP - Umur '+f.age+' hari ('+(f.age/365).toFixed(1)+' thn) / Max '+formatAge(getMaxAgeForEntity(f))+(f.isLeader?' | '+(f.gender=='male'?'👑 RAJA!':'👸 RATU!'):''):'⚰️ MENINGGAL - Hari ke-'+f.deathDay+' | Umur '+f.age+' hari')+'<br>👶 Anak: '+f.children+' '+(isAnimal(f.race)?'ekor':'orang')+' | Class: '+(f.cls||'-')+pregHtml+'</div></div><div style="display:flex;gap:6px;margin-top:8px"><button onclick="renameFav('+f.id+')" style="flex:1;padding:8px;background:#555;color:white;border:none;border-radius:10px">✏️ GANTI NAMA</button><button onclick="removeFav('+f.id+')" style="flex:1;padding:8px;background:#e74c3c;color:white;border:none;border-radius:10px">💔 HAPUS FAVORIT</button></div></div>'; }).join(''); }
+function renderFavList(){ if(!favorites.length){ document.getElementById('favList').innerHTML='<div style="text-align:center;color:#aaa;padding:30px">⭐ Belum ada favorit!<br><br>Pencet karakter di pulau<br>yang lo suka!</div>'; return; } document.getElementById('favList').innerHTML=favorites.slice().reverse().map(f=>{ let alive=entities.includes(f); let info=f.isHybrid?f.hybridData:RACES[f.race]; let icon=f.race=='centaur'?'<img src="centaur.png" style="width:30px;height:40px;object-fit:contain">':(info?info.emoji:'❓'); let pregHtml=''; let genHtml=''; let actHtml=''; if(f.huntCount||f.farmCount||f.tamed){ actHtml='<br>🏹 Berburu: '+(f.huntCount||0)+'x | 🌾 Berkebun: '+(f.farmCount||0)+'x | 🐕 Jinak: '+((f.tamed||[]).join(', ')||'Belum ada')+(f.foundedClan?' | 👥 Klan: '+f.foundedClan:''); } if(f.isHybrid){ genHtml='<br>🧬 Hybrid: <b>'+info.hybridName+'</b> | DNA: Ibu '+info.motherRace+' + Bapak '+info.fatherRace+'<br>⏳ Umur Max: ('+formatAge(info.parentAgeA)+' + '+formatAge(info.parentAgeB)+') / 2 = <b>'+formatAge(info.maxAge)+'</b><br>🤰 Hamil: ('+formatMonths(info.parentPregA)+' + '+formatMonths(info.parentPregB)+') / 2 = <b>'+formatMonths(info.pregnancy||270)+'</b>'; } else { genHtml='<br>⏳ Umur Max: <b>'+formatAge(getMaxAgeForEntity(f))+'</b> | 🤰 Hamil: <b>'+formatMonths(getPregnancyForEntity(f))+'</b>'; } if(alive && f.pregnant){ let total=f.pregnancyTotal||getPregnancyForEntity(f); let pct=Math.min(100,Math.floor(f.pregnantDays/total*100)); pregHtml='<div style="margin-top:6px"><b>'+formatPregnancy(f)+'</b><div class="pregBar"><div class="pregFill" style="width:'+pct+'%"></div></div></div>'; } return '<div class="favCard '+(alive?'':'dead')+'"><div style="display:flex;gap:10px;align-items:center"><div style="font-size:32px">'+icon+'</div><div style="flex:1"><b>⭐ '+getEntName(f)+'</b><br>Nama Asli: '+getEntNameNoTitle(f)+' | '+(f.isHybrid?info.hybridName:(info?info.name:f.race))+' | '+(f.gender=='male'?'👦 Laki-laki':'👧 Perempuan')+' | Clan '+f.clan+genHtml+actHtml+'<br>'+(alive?'🟢 HIDUP - Umur '+f.age+' hari ('+(f.age/365).toFixed(1)+' thn) / Max '+formatAge(getMaxAgeForEntity(f))+(f.isLeader?' | '+(f.gender=='male'?'👑 RAJA!':'👸 RATU!'):''):'⚰️ MENINGGAL - Hari ke-'+f.deathDay+' | Umur '+f.age+' hari')+'<br>👶 Anak: '+f.children+' '+(isAnimal(f.race)?'ekor':'orang')+' | Class: '+(f.cls||'-')+pregHtml+'</div></div><div style="display:flex;gap:6px;margin-top:8px"><button onclick="renameFav('+f.id+')" style="flex:1;padding:8px;background:#555;color:white;border:none;border-radius:10px">✏️ GANTI NAMA</button><button onclick="removeFav('+f.id+')" style="flex:1;padding:8px;background:#e74c3c;color:white;border:none;border-radius:10px">💔 HAPUS FAVORIT</button></div></div>'; }).join(''); }
 function openFav(){ document.getElementById('favPanel').style.display='flex'; updateFavCount(); renderFavList(); }
 function closeFav(){ document.getElementById('favPanel').style.display='none'; }
 function removeFav(id){ let f=favorites.find(x=>x.id==id); if(f){ f.isFav=false; refreshEntityLabel(f); favorites=favorites.filter(x=>x.id!==id); } updateFavCount(); renderFavList(); }
@@ -259,7 +559,6 @@ function boom(x,y,t){ let m={water:'💧',earth:'🌿',lightning:'⚡',meteor:'�
 function refreshEntityLabel(en){ if(!en.el) return; let classes='entity'+(en.isFav?' fav':'')+(en.isLeader?' leader':'')+(en.pregnant?' pregnant':''); en.el.className=classes; let badges=''; if(en.isFav) badges+='<div style="font-size:12px;line-height:1">⭐</div>'; if(en.isLeader) badges+='<div style="font-size:12px;line-height:1">👑</div>'; if(en.pregnant) badges+='<div style="font-size:12px;line-height:1">🤰</div>'; let inner=getRaceHTML(en.race, en.hybridData); if(en.race=='centaur') inner=badges+'<img src="centaur.png" class="centaurImg">'; else inner=badges+inner; if(!isAnimal(en.race)){ inner+='<div style="font-size:9px;background:rgba(0,0,0,0.7);border-radius:6px;padding:1px 4px;margin-top:1px;white-space:nowrap">'+getEntNameNoTitle(en)+'</div>'; if(en.isHybrid) inner+='<div style="font-size:8px;background:rgba(255,0,255,0.7);border-radius:6px;padding:1px 4px;margin-top:1px;white-space:nowrap">'+en.hybridData.hybridName+'</div>'; } en.el.innerHTML=inner; applyAnimalVisibility(en); }
 function giveBirth(mother){ let father=mother.pregnantFather, isH=mother.pregnantIsHybrid; mother.pregnant=false; mother.pregnantDays=0; mother.pregnancyTotal=0; mother.children++; if(isAnimal(mother.race)){ let p=getSpawnPos(mother.race); spawn(mother.race,p.x,p.y); stats.totalBorn++; stats.totalAnimalsBorn++; } else if(isH){ makeHybrid(mother,father,mother.x+10,mother.y+10); if(mother.isFav) addHistory('special','✨ Favorit ⭐ '+getEntNameNoTitle(mother)+' melahirkan HYBRID!'); } else { let p=getSpawnPos(mother.race); let c=spawn(mother.race,p.x,p.y,mother.clan); stats.totalBorn++; let pregDays=getPregnancyForEntity(mother); addHistory('birth','👶 '+getEntNameNoTitle(mother)+' ('+(mother.isHybrid?mother.hybridData.hybridName:mother.race)+' Clan '+mother.clan+') MELAHIRKAN setelah hamil '+formatMonths(pregDays)+'! Anak ke-'+mother.children+' - Bayinya: '+getEntNameNoTitle(c)); } refreshEntityLabel(mother); }
 function makeHybrid(mother,father,x,y){
-  // v22.0 - UMUR + HAMIL SAMA RUMUS! Hybrid = rata-rata KEDUA ORTU!
   let da=mother.isHybrid?mother.hybridData:RACES[mother.race], db=father.isHybrid?father.hybridData:RACES[father.race];
   let pregMother=getPregnancyForEntity(mother);
   let pregFather=getPregnancyForEntity(father);
@@ -280,11 +579,50 @@ function spawn(race,x,y,inheritClan){ if(W==0) resize(); let info=RACES[race]; i
 function killNear(x,y,r){ let killed=[]; entities=entities.filter(en=>{ if(Math.sqrt((en.x-x)**2+(en.y-y)**2)<r && en.race!='tree'){ killed.push(en); en.el.remove(); return false; } return true; }); if(killed.length){ stats.totalKilled+=killed.length; killed.forEach(k=>{ k.deathDay=day; if(k.isLeader){ addHistory('queen','💀 '+(k.gender=='male'?'👑 RAJA':'👸 RATU')+' '+getEntNameNoTitle(k)+' ('+k.race+') meninggal kena DOOM!'); } }); addHistory('killed','☄️ DOOM! '+killed.length+' makhluk mati kena bencana! '+(killed.filter(k=>k.isFav).length? '😭 Termasuk FAVORIT: '+killed.filter(k=>k.isFav).map(k=>getEntNameNoTitle(k)).join(', '):'')); } updateLeaders(); updateClanBar(); updateFavCount(); }
 canvas.addEventListener('touchstart',e=>{ if(tool=='none') return; drawing=true; paint(e); }); canvas.addEventListener('touchmove',e=>{ if(drawing) paint(e); e.preventDefault(); }); canvas.addEventListener('touchend',()=>drawing=false);
 canvas.addEventListener('mousedown',e=>{ if(tool=='none') return; drawing=true; paint(e); }); canvas.addEventListener('mousemove',e=>{ if(drawing) paint(e); }); canvas.addEventListener('mouseup',()=>drawing=false);
-function spawnRandom(){ loadGame(); resize(); createIslands(); ['human','elf','mermaid','goblin','centaur','lamia'].forEach(r=>{ for(let i=0;i<2;i++){ let p=getSpawnPos(r); spawn(r,p.x,p.y); } }); ['butterfly','bee','ant','rabbit','chicken','sheep','cow','dog'].forEach(r=>{ let p=getSpawnPos(r); spawn(r,p.x,p.y); }); if(!history.length) addHistory('special','🌍 DUNIA BARU DIBUAT! 1 Januari Tahun 1! Umur + Hamil = rata-rata ortu!'); updateLeaders(true); updateClanBar(); updateCalendar(); updateFavCount(); }
+function spawnRandom(){ loadGame(); resize(); createIslands(); ['human','elf','mermaid','goblin','centaur','lamia'].forEach(r=>{ for(let i=0;i<2;i++){ let p=getSpawnPos(r); spawn(r,p.x,p.y); } }); ['butterfly','bee','ant','rabbit','chicken','sheep','cow','dog'].forEach(r=>{ let p=getSpawnPos(r); spawn(r,p.x,p.y); }); if(!history.length) addHistory('special','🌍 DUNIA BARU DIBUAT! 1 Januari Tahun 1! Dunia mulai hidup, warga akan berburu, berkebun, dirikan desa, dll!'); updateLeaders(true); updateClanBar(); updateCalendar(); updateFavCount(); }
 window.onresize=resize; resize(); spawnRandom(); setInterval(saveGame,30000);
-function openMap(){ document.getElementById('mapPanel').style.display='flex'; let mc=document.getElementById('miniMap'); let mctx=mc.getContext('2d'); mc.width=mc.clientWidth||300; mc.height=260; mctx.drawImage(canvas,0,0,mc.width,mc.height); updateCalendar(); let wd=getWorldDate(); document.getElementById('mapSummary').innerText='Hari ke-'+day+' | '+getWorldDateStr()+' | Total '+entities.length; let leaders=SMART_RACES.map(r=>{ let l=getLeaderOf(r); return l? (l.gender=='male'?'👑 RAJA ':'👸 RATU ')+getEntNameNoTitle(l)+' ('+r+')' : r+' punah'; }).join('<br>'); document.getElementById('mapInfo').innerHTML='<p>Human '+countLabel('human',countRace('human'))+' | Elf '+countLabel('elf',countRace('elf'))+' | Mermaid '+countLabel('mermaid',countRace('mermaid'))+' | Goblin '+countLabel('goblin',countRace('goblin'))+' | Centaur '+countLabel('centaur',countRace('centaur'))+' | Lamia '+countLabel('lamia',countRace('lamia'))+' | Hewan '+countAnimals()+' ekor | ⭐ Favorit '+favorites.length+' orang | 🤰 Hamil '+entities.filter(e=>e.pregnant).length+' orang</p><p><b>👑 RAJA / RATU:</b><br>'+leaders+'</p><p><b>🤰 HAMIL:</b><br>'+entities.filter(e=>e.pregnant).map(e=>getEntNameNoTitle(e)+' - '+formatPregnancy(e)).join('<br>')+'</p><p><b>✨ HYBRID:</b><br>'+entities.filter(e=>e.race=='hybrid').map(e=>getEntNameNoTitle(e)+' - Ras: '+e.hybridData.hybridName+' | Umur: '+formatAge(e.hybridData.maxAge)+' | Hamil: '+formatMonths(e.hybridData.pregnancy)).join('<br>')+'</p>'; }
+function openMap(){ document.getElementById('mapPanel').style.display='flex'; let mc=document.getElementById('miniMap'); let mctx=mc.getContext('2d'); mc.width=mc.clientWidth||300; mc.height=260; mctx.drawImage(canvas,0,0,mc.width,mc.height); updateCalendar(); let wd=getWorldDate(); document.getElementById('mapSummary').innerText='Hari ke-'+day+' | '+getWorldDateStr()+' | Total '+entities.length; let leaders=SMART_RACES.map(r=>{ let l=getLeaderOf(r); return l? (l.gender=='male'?'👑 RAJA ':'👸 RATU ')+getEntNameNoTitle(l)+' ('+r+')' : r+' punah'; }).join('<br>'); document.getElementById('mapInfo').innerHTML='<p>Human '+countLabel('human',countRace('human'))+' | Elf '+countLabel('elf',countRace('elf'))+' | Mermaid '+countLabel('mermaid',countRace('mermaid'))+' | Goblin '+countLabel('goblin',countRace('goblin'))+' | Centaur '+countLabel('centaur',countRace('centaur'))+' | Lamia '+countLabel('lamia',countRace('lamia'))+' | Hewan '+countAnimals()+' ekor | ⭐ Favorit '+favorites.length+' orang | 🤰 Hamil '+entities.filter(e=>e.pregnant).length+' orang</p><p><b>👑 RAJA / RATU:</b><br>'+leaders+'</p><p><b>🏘️ PERADABAN:</b><br>Desa: '+villages.map(v=>v.name).join(', ')+' | Kota: '+cities.map(c=>c.name).join(', ')+' | Kerajaan: '+kingdoms.map(k=>k.name).join(', ')+' | Sekte: '+sects.map(s=>s.name).join(', ')+'</p><p><b>🤰 HAMIL:</b><br>'+entities.filter(e=>e.pregnant).map(e=>getEntNameNoTitle(e)+' - '+formatPregnancy(e)).join('<br>')+'</p><p><b>✨ HYBRID:</b><br>'+entities.filter(e=>e.race=='hybrid').map(e=>getEntNameNoTitle(e)+' - Ras: '+e.hybridData.hybridName+' | Umur: '+formatAge(e.hybridData.maxAge)+' | Hamil: '+formatMonths(e.hybridData.pregnancy)).join('<br>')+'</p>'; }
 function closeMap(){ document.getElementById('mapPanel').style.display='none'; }
-function gameLoop(){ if(!paused){ day++; let wd=getWorldDate(); if(wd.getDate()==1 && wd.getMonth()==0 && day>1){ addHistory('special','🎉 TAHUN BARU! Sekarang Tahun '+wd.getFullYear()+'! Dunia udah '+day+' hari!'); } updateCalendar(); updateLeaders(); updateClanBar(); let snap=[...entities]; snap.forEach(en=>{ if(!entities.includes(en)||en.race=='tree') return; let info=en.isHybrid?en.hybridData:RACES[en.race]; en.age++; if(en.pregnant){ en.pregnantDays++; if(en.pregnantDays>=en.pregnancyTotal) giveBirth(en); return; } if(en.age>=info.maxAge){ en.deathDay=day; let wasLeader=en.isLeader; if(en.isFav) addHistory('death','💀 FAVORIT ⭐ '+getEntNameNoTitle(en)+' ('+(en.isHybrid?en.hybridData.hybridName:en.race)+') meninggal tua umur '+en.age+' hari ('+(en.age/365).toFixed(1)+' thn) di '+getWorldDateStr()+'! Umur max-nya '+formatAge(info.maxAge)+'! 😭'); else if(!isAnimal(en.race)) addHistory('death','💀 '+getEntNameNoTitle(en)+' ('+(en.isHybrid?en.hybridData.hybridName:en.race)+' Clan '+en.clan+') meninggal tua umur '+en.age+' hari ('+(en.age/365).toFixed(1)+' thn) - Max '+formatAge(info.maxAge)+(wasLeader?' - '+ (en.gender=='male'?'RAJA':'RATU')+' '+en.race+' meninggal!':'') ); en.el.innerHTML='💀'; if(!isAnimal(en.race)) en.el.style.display='block'; setTimeout(()=>en.el.remove(),800); entities=entities.filter(e=>e!==en); stats.totalDied++; return; } let nx=Math.max(0,Math.min(W-30,en.x+(Math.random()-0.5)*info.speed*3)), ny=Math.max(0,Math.min(H-30,en.y+(Math.random()-0.5)*info.speed*3)); if(en.race!='hybrid'){ if(needsWater(en.race) && isLandAt(nx,ny)) return; if(!needsWater(en.race) && isWaterAt(nx,ny)) return; } en.x=nx; en.y=ny; en.el.style.left=nx+'px'; en.el.style.top=ny+'px'; applyAnimalVisibility(en); if(Math.random()<info.breed){ let near=entities.filter(o=>o!==en && o.race==en.race && o.gender!=en.gender && !o.pregnant && Math.abs(o.x-en.x)<40 && Math.abs(o.y-en.y)<40); if(near.length){ let mate=near[0]; let mother=en.gender=='female'?en:mate; let father=mother==en?mate:en; if(mother.pregnant) return; if(mate.race==en.race && !en.isHybrid && !mate.isHybrid){ if(countRace(en.race)<60){ mother.pregnant=true; mother.pregnantDays=0; mother.pregnancyTotal=isAnimal(mother.race)?getPregnancyDaysForAnimalMother(mother):getPregnancyForEntity(mother); mother.pregnantFather=father; mother.pregnantIsHybrid=false; stats.totalPregnant++; addHistory('special','🤰 '+getEntNameNoTitle(mother)+' ('+mother.race+') HAMIL! Ngikutin dia sendiri: Ibu '+mother.race+' = '+formatMonths(mother.pregnancyTotal)+'! Bapak '+getEntNameNoTitle(father)+' ('+father.race+') gak ngaruh!'); if(mother.isFav) addHistory('special','🤰 FAVORIT ⭐ '+getEntNameNoTitle(mother)+' HAMIL '+formatMonths(mother.pregnancyTotal)+'!'); refreshEntityLabel(mother); } } else { if(entities.length<120){ mother.pregnant=true; mother.pregnantDays=0; mother.pregnancyTotal=isAnimal(mother.race)?getPregnancyDaysForAnimalMother(mother):getPregnancyForEntity(mother); mother.pregnantFather=father; mother.pregnantIsHybrid=true; if(mother.isHybrid) addHistory('special','🤰 '+getEntNameNoTitle(mother)+' ('+mother.hybridData.hybridName+') HAMIL! Dia Hybrid, jadi hamilnya = rata-rata kedua ortunya: ('+formatMonths(mother.hybridData.parentPregA)+' + '+formatMonths(mother.hybridData.parentPregB)+') / 2 = '+formatMonths(mother.pregnancyTotal)+'! Umurnya juga sama rumusnya: '+formatAge(mother.hybridData.maxAge)+'!'); } } } } }); updateLeaders(); } setTimeout(gameLoop, speedValues[speedMode]); } gameLoop();
+function gameLoop(){
+  if(!paused){
+    day++;
+    let wd=getWorldDate();
+    if(wd.getDate()==1 && wd.getMonth()==0 && day>1){ addHistory('special','🎉 TAHUN BARU! Sekarang Tahun '+wd.getFullYear()+'! Dunia udah '+day+' hari!'); }
+    // v22.3 - TIAP 3 HARI, ADA 1 AKTIVITAS KEHIDUPAN! Biar Kronologi rame!
+    if(day%3==0){ doLifeEvent(); }
+    updateCalendar(); updateLeaders(); updateClanBar();
+    let snap=[...entities];
+    snap.forEach(en=>{
+      if(!entities.includes(en)||en.race=='tree') return;
+      let info=en.isHybrid?en.hybridData:RACES[en.race];
+      en.age++;
+      if(en.pregnant){ en.pregnantDays++; if(en.pregnantDays>=en.pregnancyTotal) giveBirth(en); return; }
+      if(en.age>=info.maxAge){
+        en.deathDay=day; let wasLeader=en.isLeader;
+        if(en.isFav) addHistory('death','💀 FAVORIT ⭐ '+getEntNameNoTitle(en)+' ('+(en.isHybrid?en.hybridData.hybridName:en.race)+') meninggal tua umur '+en.age+' hari ('+(en.age/365).toFixed(1)+' thn) di '+getWorldDateStr()+'! Umur max-nya '+formatAge(info.maxAge)+'! 😭');
+        else if(!isAnimal(en.race)) addHistory('death','💀 '+getEntNameNoTitle(en)+' ('+(en.isHybrid?en.hybridData.hybridName:en.race)+' Clan '+en.clan+') meninggal tua umur '+en.age+' hari ('+(en.age/365).toFixed(1)+' thn) - Max '+formatAge(info.maxAge)+(wasLeader?' - '+ (en.gender=='male'?'RAJA':'RATU')+' '+en.race+' meninggal!':'') );
+        en.el.innerHTML='💀'; if(!isAnimal(en.race)) en.el.style.display='block'; setTimeout(()=>en.el.remove(),800); entities=entities.filter(e=>e!==en); stats.totalDied++; return;
+      }
+      let nx=Math.max(0,Math.min(W-30,en.x+(Math.random()-0.5)*info.speed*3)), ny=Math.max(0,Math.min(H-30,en.y+(Math.random()-0.5)*info.speed*3));
+      if(en.race!='hybrid'){ if(needsWater(en.race) && isLandAt(nx,ny)) return; if(!needsWater(en.race) && isWaterAt(nx,ny)) return; }
+      en.x=nx; en.y=ny; en.el.style.left=nx+'px'; en.el.style.top=ny+'px'; applyAnimalVisibility(en);
+      if(Math.random()<info.breed){
+        let near=entities.filter(o=>o!==en && o.race==en.race && o.gender!=en.gender && !o.pregnant && Math.abs(o.x-en.x)<40 && Math.abs(o.y-en.y)<40);
+        if(near.length){
+          let mate=near[0]; let mother=en.gender=='female'?en:mate; let father=mother==en?mate:en; if(mother.pregnant) return;
+          if(mate.race==en.race && !en.isHybrid && !mate.isHybrid){
+            if(countRace(en.race)<60){ mother.pregnant=true; mother.pregnantDays=0; mother.pregnancyTotal=isAnimal(mother.race)?getPregnancyDaysForAnimalMother(mother):getPregnancyForEntity(mother); mother.pregnantFather=father; mother.pregnantIsHybrid=false; stats.totalPregnant++; addHistory('special','🤰 '+getEntNameNoTitle(mother)+' ('+mother.race+') HAMIL! Ngikutin dia sendiri: Ibu '+mother.race+' = '+formatMonths(mother.pregnancyTotal)+'! Bapak '+getEntNameNoTitle(father)+' ('+father.race+') gak ngaruh!'); if(mother.isFav) addHistory('special','🤰 FAVORIT ⭐ '+getEntNameNoTitle(mother)+' HAMIL '+formatMonths(mother.pregnancyTotal)+'!'); refreshEntityLabel(mother); }
+          } else {
+            if(entities.length<120){ mother.pregnant=true; mother.pregnantDays=0; mother.pregnancyTotal=isAnimal(mother.race)?getPregnancyDaysForAnimalMother(mother):getPregnancyForEntity(mother); mother.pregnantFather=father; mother.pregnantIsHybrid=true; if(mother.isHybrid) addHistory('special','🤰 '+getEntNameNoTitle(mother)+' ('+mother.hybridData.hybridName+') HAMIL! Dia Hybrid, jadi hamilnya = rata-rata kedua ortunya: ('+formatMonths(mother.hybridData.parentPregA)+' + '+formatMonths(mother.hybridData.parentPregB)+') / 2 = '+formatMonths(mother.pregnancyTotal)+'! Umurnya juga sama rumusnya: '+formatAge(mother.hybridData.maxAge)+'!'); }
+          }
+        }
+      }
+    });
+    updateLeaders();
+  }
+  setTimeout(gameLoop, speedValues[speedMode]);
+}
+gameLoop();
 </script>
 </body>
 </html>
